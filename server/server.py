@@ -1,0 +1,148 @@
+from flask import Flask, request
+import jsonpickle
+import time
+import random
+import pygame
+class tile(pygame.sprite.Sprite):
+    def __init__(self, X, Y, I):
+        self.X = X
+        self.Y = Y
+        self.I = I
+        self.s = [100,100]
+playersID=0
+moobs=[]
+moobID=0
+class moob(object):
+    def __init__(self):
+        global moobID
+        moobID+=1
+        self.ID=moobID
+        self.X=-20000 + 200 * random.randint(1, 199)
+        self.Y=-20000 + 200 * random.randint(1, 199)
+        self.enemies = []
+        for e in range(random.randint(1,5)):
+            self.enemies.append(random.randint(1,2))
+class player(object):
+    def __init__(self):
+        global playersID
+        self.updates=[]
+        playersID+=1
+        self.ID=playersID
+        self.X=0
+        self.Y=0
+players=[]
+shops=[]
+shopID = 0
+class shop(object):
+    def __init__(self):
+        global shopID
+        shopID+=1
+        self.ID=shopID
+        self.X=-20000 + 200 * random.randint(1, 199)
+        self.Y=-20000 + 200 * random.randint(1, 199)
+
+for e in range(500):
+    shops.append(shop())
+
+for e in range(500):
+    moobs.append(moob())
+
+
+class timer(object):
+    def __init__(self,ID):
+        self.T="hu ha"
+        self.ID=ID
+
+app = Flask(__name__)
+
+f=1
+updates=[]
+@app.route('/ShopUpdate', methods = ['POST'])
+def ShopUpdate():
+    global shops,updates
+    update = jsonpickle.decode(request.get_data())
+    for e in shops:
+        if e.ID==update[0]:
+            newshop=shop()
+            for b in players:
+                if not b.ID==update[1]:
+                    b.updates.append([0,[e.ID,newshop]])
+            shops.append(newshop)
+            shops.remove(e)
+            return jsonpickle.encode(newshop)
+            break
+
+@app.route('/MoobUpdate', methods = ['POST'])
+def MoobUpdate():
+    global moobs,updates
+    update = jsonpickle.decode(request.get_data())
+    for e in moobs:
+        if e.ID==update[0]:
+            newshop=moob()
+            for b in players:
+                if not b.ID==update[1]:
+                    b.updates.append([1,[e.ID,newshop]])
+            moobs.append(newshop)
+            moobs.remove(e)
+            return jsonpickle.encode(newshop)
+            break
+
+@app.route('/PlayerUpdate', methods = ['POST'])
+def PlayerUpdate():
+    global players
+    update = jsonpickle.decode(request.get_data())
+    for e in players:
+        if e.ID==update.ID:
+            e.X=-update.X
+            e.Y=-update.Y
+            break
+    return '1'
+
+@app.route('/MyUpdates', methods = ['POST'])
+def giveupdate():
+    global players
+    update = jsonpickle.decode(request.get_data())
+    for e in players:
+        if e.ID==update:
+            dododoo=[e for e in e.updates]
+            e.updates = []
+            return jsonpickle.encode(dododoo)
+            break
+    print('clientnotfounderror')
+    return jsonpickle.encode([])
+@app.route('/game/<name>', methods = ['GET', 'POST'])
+def game_endpoint(name):
+    global f
+    if request.method == 'POST':
+        data = jsonpickle.decode(request.get_data())
+        data.ID+=1
+        return jsonpickle.encode(data)
+    else:
+        f+=1
+        return f"Hello, {name} {f}!"
+
+@app.route('/players')
+def getPlayers():
+    return jsonpickle.encode(players)
+
+@app.route('/start')
+def startdfhd():
+    global players
+    newplayer=player()
+    players.append(newplayer)
+    return jsonpickle.encode(newplayer)
+
+@app.route('/shoppos')
+def shopposer():
+    global shops
+    return jsonpickle.encode(shops)
+@app.route('/mobbos')
+def mobboser():
+    global moobs
+    return jsonpickle.encode(moobs)
+@app.route('/time')
+def time_endpoint():
+    return "%f" % time.time()
+
+
+app.run('0.0.0.0', 5000, True)
