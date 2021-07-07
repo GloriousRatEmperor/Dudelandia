@@ -1128,7 +1128,6 @@ def shoppin():
 shopIMG = pygame.transform.smoothscale(img('shopkeeper.png'), (w, h))
 def fight(ene):
     global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, mobs, PSPE, PXSPD, PYSPD
-    PSPE /= 2
     for e in ene:
         loot.append(e.loot)
         chosen.append(e)
@@ -1638,7 +1637,7 @@ while running:
             e.A[0]=0
             e.helfloss=0
     else:
-        if ti % 500 == 0:
+        if int(ti) % 15 == 0:
             for e in mobs:
                 if not borderY[0] - 1500 < e.Y + me.Y < borderY[1] + 1500:
                     mobs.remove(e)
@@ -1646,20 +1645,20 @@ while running:
                 elif not borderX[0] - 1500 < e.X + Px < borderX[1] + 1500:
                     mobs.remove(e)
                     e.kill
-            for _ in range(3):
+            for _ in range(10):
                 poser=random.randint(1,4)
                 if poser==1:
                     xposs=random.randint(-100,w+100)
-                    yposs = random.randint(100, 200)
+                    yposs = random.randint(-200, -100)
                 if poser==2:
                     xposs=random.randint(-100,w+100)
-                    yposs = random.randint(-200, -100)
+                    yposs = random.randint(h+100, h+200)
                 elif poser==3:
                     yposs = random.randint(-100, h + 100)
                     xposs = random.randint(-200, -100)
                 else:
                     yposs=random.randint(-100,h+100)
-                    xposs = random.randint(100, 200)
+                    xposs = random.randint(w+100, w+200)
                 mobs.append(genmob(random.randint(1,6),[xposs,yposs]))
 
         draw2()
