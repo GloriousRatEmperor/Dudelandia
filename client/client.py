@@ -772,8 +772,8 @@ def mobmov():
         mod=1.8
         if arena==1:
             mod=1
-        e.X += e.EX*mod
-        e.Y += e.EY*mod
+        e.X += e.EX*mod*(time.time() - start_time)*70
+        e.Y += e.EY*mod*(time.time() - start_time)*70
         e.x = int(e.X)
         e.y = int(e.Y)
 
@@ -1699,8 +1699,8 @@ while running:
             if xS < 0:
                 PXSPD *= -1
             PYSPD = PXSPD * yS / xS
-    Px -= PXSPD
-    Py -= PYSPD
+    Px -= PXSPD*(time.time() - start_time)*70
+    Py -= PYSPD*(time.time() - start_time)*70
     if distanceM(posofmousa[0] + me.X, posofmousa[1] + me.Y, w // 2, h // 2, 10):
         posofmousa = [1000000, 1000000]
         PXSPD = 0
@@ -1753,4 +1753,4 @@ while running:
         updatelist[e[0]](e[1])
 
     pygame.display.update()
-    ti += 1
+    ti += (time.time() - start_time)*50
