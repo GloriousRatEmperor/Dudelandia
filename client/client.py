@@ -779,7 +779,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 10000000
+money = 0
 loot = []
 
 def distanceC(eneX, eneY, bulX, bulY):
