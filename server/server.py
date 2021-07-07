@@ -3,6 +3,7 @@ import jsonpickle
 import time
 import random
 import pygame
+countdown=-1
 class tile(pygame.sprite.Sprite):
     def __init__(self, X, Y, I):
         self.X = X
@@ -20,8 +21,8 @@ class moob(object):
         self.X=-20000 + 200 * random.randint(1, 199)
         self.Y=-20000 + 200 * random.randint(1, 199)
         self.enemies = []
-        for e in range(random.randint(1,5)):
-            self.enemies.append(random.randint(1,2))
+        for e in range(random.randint(2,15)):
+            self.enemies.append(random.randint(1,6))
 class player(object):
     def __init__(self):
         global playersID
@@ -30,6 +31,10 @@ class player(object):
         self.ID=playersID
         self.X=0
         self.Y=0
+        self.dead=0
+        self.spell = 0
+        self.physical = 0
+        self.H = [500, 500]
 players=[]
 shops=[]
 shopID = 0
@@ -41,7 +46,7 @@ class shop(object):
         self.X=-20000 + 200 * random.randint(1, 199)
         self.Y=-20000 + 200 * random.randint(1, 199)
 
-for e in range(500):
+for e in range(1000):
     shops.append(shop())
 
 for e in range(500):
@@ -57,6 +62,38 @@ app = Flask(__name__)
 
 f=1
 updates=[]
+@app.route('/Murderfight', methods = ['POST'])
+def Murderfight():
+    global updates
+    update = jsonpickle.decode(request.get_data())
+    for b in players:
+        if b.dead == 0:
+            b.updates.append([3,[players]])
+            b.dead = 1
+    return jsonpickle.encode(players)
+
+@app.route('/Dmgdone', methods = ['POST'])
+def Dmgdone():
+    global players
+    update = jsonpickle.decode(request.get_data())
+    pla=update[0]
+    playrID=update[1]
+    print(update)
+    for e in pla:
+        for b in players:
+            if b.ID==e[2]:
+                b.spell+=e[0]
+                b.physical+=e[1]
+                break
+    for e in players:
+        if e.ID==playrID:
+            phys=e.physical
+            spol=e.spell
+            e.physical=0
+            e.spell=0
+            return jsonpickle.encode([spol,phys])
+            break
+
 @app.route('/ShopUpdate', methods = ['POST'])
 def ShopUpdate():
     global shops,updates
@@ -72,6 +109,20 @@ def ShopUpdate():
             return jsonpickle.encode(newshop)
             break
 
+@app.route('/playerdeath', methods = ['POST'])
+def playerdeath():
+    global players,updates
+    update = jsonpickle.decode(request.get_data())
+    for e in shops:
+        if e.ID==update[0]:
+            newshop=shop()
+            for b in players:
+                if not b.ID==update[1]:
+                    b.updates.append([0,[e.ID,newshop]])
+            shops.append(newshop)
+            shops.remove(e)
+            return jsonpickle.encode(newshop)
+            break
 @app.route('/MoobUpdate', methods = ['POST'])
 def MoobUpdate():
     global moobs,updates
@@ -95,6 +146,7 @@ def PlayerUpdate():
         if e.ID==update.ID:
             e.X=-update.X
             e.Y=-update.Y
+            e.H=update.H
             break
     return '1'
 
@@ -127,9 +179,15 @@ def getPlayers():
 
 @app.route('/start')
 def startdfhd():
-    global players
+    global players,countdown
     newplayer=player()
     players.append(newplayer)
+    if len(players)==2:
+        countdown=int(time.time())
+        for e in players:
+            e.updates.append([2,[countdown]])
+    elif countdown>0:
+        newplayer.updates.append([2, [countdown]])
     return jsonpickle.encode(newplayer)
 
 @app.route('/shoppos')
