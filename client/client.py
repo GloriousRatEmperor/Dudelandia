@@ -8,16 +8,16 @@ import jsonpickle
         self.ID = ID
 
 
-r = requests.get('http://127.0.0.1:5000/game/fanda')
+r = requests.get('http://'+ipadress+':5000/game/fanda')
 print(r.text)
 give = []
 give.append(timer(3))
 headers = {'Content-type': 'application/json'}
 for e in give:
-    r = requests.post('http://127.0.0.1:5000/game/fanda', headers=headers, data=jsonpickle.encode(e))
+    r = requests.post('http://'+ipadress+':5000/game/fanda', headers=headers, data=jsonpickle.encode(e))
 print(r.text)
 
-r = requests.get('http://127.0.0.1:5000/time')
+r = requests.get('http://'+ipadress+':5000/time')
 (float(r.text))'''
 
 # *this is never used because the function is shared with the mobs, the mobs specify when the thing hits whereas the player has separate conditions. this is a mess btw.
@@ -41,9 +41,9 @@ class player(object):
         self.H =H
 
 with open("ip.txt", "r") as ip:
-    hhh=ip.read()
+    ipadress=ip.read()
 
-r = requests.get(f'http://{hhh}:5000/start')
+r = requests.get(f'http://{ipadress}:5000/start')
 me=jsonpickle.decode(r.text)
 
 def img(imgname):
@@ -585,7 +585,7 @@ def draw2():
             if h // 2 + e.s[1] > e.Y + me.Y + e.s[1] > h // 2:
                 PXSPD = 0
                 PYSPD = 0
-                r = requests.post('http://127.0.0.1:5000/ShopUpdate', headers=headers, data=jsonpickle.encode([e.ID,me.ID]))
+                r = requests.post('http://'+ipadress+':5000/ShopUpdate', headers=headers, data=jsonpickle.encode([e.ID,me.ID]))
                 shoops = jsonpickle.decode(r.text)
                 shops.append(tile(shoops.X, shoops.Y, shoptile, shoops.ID))
                 shops.remove(e)
@@ -598,7 +598,7 @@ def draw2():
                 PXSPD = 0
                 PYSPD = 0
                 mobbin(e)
-                r = requests.post('http://127.0.0.1:5000/MoobUpdate', headers=headers, data=jsonpickle.encode([e.ID,me.ID]))
+                r = requests.post('http://'+ipadress+':5000/MoobUpdate', headers=headers, data=jsonpickle.encode([e.ID,me.ID]))
                 shoops = jsonpickle.decode(r.text)
                 moobs.append(moob(shoops.X,shoops.Y,mobtile,shoops.ID,shoops.enemies))
                 moobs.remove(e)
@@ -1218,13 +1218,13 @@ def breaker(f):
 buttons.append(button(w * 0.82, h * 0.8, playbutton, breaker, []))
 vvv = 0
 ggggg = 0
-r = requests.get('http://127.0.0.1:5000/shoppos')
+r = requests.get('http://'+ipadress+':5000/shoppos')
 shoops = jsonpickle.decode(r.text)
 shops=[]
 for e in shoops:
     shops.append(tile(e.X,e.Y,shoptile,e.ID))
 
-r = requests.get('http://127.0.0.1:5000/mobbos')
+r = requests.get('http://'+ipadress+':5000/mobbos')
 mooobs = jsonpickle.decode(r.text)
 moobs=[]
 for e in mooobs:
@@ -1610,7 +1610,7 @@ while running:
         borderX = [(w - ArenaSize[0]) // 2 + Px, (w - ArenaSize[0]) // 2 + Px + ArenaSize[0]]
         borderY = [(h - ArenaSize[1]) // 2 + Py, (h - ArenaSize[1]) // 2 + Py + ArenaSize[1]]
         draw7()
-        r = requests.get('http://127.0.0.1:5000/players')
+        r = requests.get('http://'+ipadress+':5000/players')
         players = jsonpickle.decode(r.text)
         for e in players:
             if e.ID != me.ID:
@@ -1624,14 +1624,14 @@ while running:
                         pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(b.x + me.X, b.y + me.Y - 20, PlayerSizecrpd[1], 10))
                         pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(b.x + me.X, b.y + me.Y - 20, PlayerSizecrpd[1]*e.H[0]/e.H[1], 10))
                         b.helfloss=b.H[1]-b.H[0]
-        r = requests.post('http://127.0.0.1:5000/Dmgdone', headers=headers, data=jsonpickle.encode([[[e.helfloss,e.A[0],e.ID] for e in mobs],me.ID]))
+        r = requests.post('http://'+ipadress+':5000/Dmgdone', headers=headers, data=jsonpickle.encode([[[e.helfloss,e.A[0],e.ID] for e in mobs],me.ID]))
         heh = jsonpickle.decode(r.text)
         if heh[1] > PARMR:
             me.H[0] -= (heh[1] - PARMR) / (8 + max(PARMR, 0) / 10)
         if heh[0] > PPARMR:
             me.H[0] -= (heh[0] - PPARMR) / (8 + max(PPARMR, 0) / 10)
         if me.H[0]<0:
-            r = requests.post('http://127.0.0.1:5000/playerdeath', headers=headers,
+            r = requests.post('http://'+ipadress+':5000/playerdeath', headers=headers,
                               data=jsonpickle.encode(me.ID))
             enewin()
         for e in mobs:
@@ -1666,7 +1666,7 @@ while running:
         # for e in mobs:
         #     if distanceM(e.X + me.X + e.s[0] // 2, e.Y + me.Y + e.s[1] // 2, w // 2, h // 2, 100):
         #         fight([e])
-        r = requests.get('http://127.0.0.1:5000/players')
+        r = requests.get('http://'+ipadress+':5000/players')
         players = jsonpickle.decode(r.text)
         for e in players:
             if e.ID != me.ID:
@@ -1737,7 +1737,7 @@ while running:
     screen.blit(fps, (10, 50))
     if (countdown+10 - int(start_time))<1:
         countdown=1000000000000
-        r = requests.post('http://127.0.0.1:5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
+        r = requests.post('http://'+ipadress+':5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
     if cooldown > 0:
         cooldown -= 1
     for e in timedstuffs:
@@ -1745,9 +1745,9 @@ while running:
             e.F()
         else:
             break
-    requests.post('http://127.0.0.1:5000/PlayerUpdate',headers=headers,data=jsonpickle.encode(me))
+    requests.post('http://'+ipadress+':5000/PlayerUpdate',headers=headers,data=jsonpickle.encode(me))
 
-    r = requests.post('http://127.0.0.1:5000/MyUpdates',headers=headers,data=jsonpickle.encode(me.ID))
+    r = requests.post('http://'+ipadress+':5000/MyUpdates',headers=headers,data=jsonpickle.encode(me.ID))
     newupdates=jsonpickle.decode(r.text)
     for e in newupdates:
         updatelist[e[0]](e[1])
