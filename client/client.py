@@ -832,8 +832,8 @@ def lootem(ene):
         else:
             money += e
     loot = []
-for e in range(100):
-    lootem(genmob(random.randint(1,6)))
+#for e in range(100):
+#    lootem(genmob(random.randint(1,6)))
 def equippedArmr(armor):
     global PATC, Activearmor, Activearmor, PlayerSize, PSPECIAL,Patcsped,me,PASPE,PARMR,PPARMR
     armor.item[2] = pygame.transform.smoothscale(armor.item[2],
@@ -1561,18 +1561,18 @@ while running:
                 if event.key == pygame.K_F4:
                     raise SystemExit
 
-            if event.key == pygame.K_p:
-                mobs.append(genmob(1))
-                mobs.append(genmob(2))
-                mobs.append(genmob(3))
-                mobs.append(genmob(5))
-                mobs.append(genmob(4))
-                mobs.append(genmob(6))
-                weaponsRANDOM(0)
+            # if event.key == pygame.K_p:
+            #     mobs.append(genmob(1))
+            #     mobs.append(genmob(2))
+            #     mobs.append(genmob(3))
+            #     mobs.append(genmob(5))
+            #     mobs.append(genmob(4))
+            #     mobs.append(genmob(6))
+            #     weaponsRANDOM(0)
 
-            if event.key == pygame.K_t:
-                mobs.append(genmob(3))
-                weaponsRANDOM(0)
+            # if event.key == pygame.K_t:
+            #     mobs.append(genmob(3))
+            #     weaponsRANDOM(0)
             if event.key == pygame.K_a:
                 apressed = 1
                 if cooldown < 1:
@@ -1733,9 +1733,9 @@ while running:
     ############           ############           ############           ############
     fps = font.render("FPS: " + str(time.time() - start_time), True, (0, 0, 0))
     screen.blit(fps, (10, 20))
-    fps = font.render("TimeTillDeath: " + str(countdown+1000 - int(start_time)), True, (0, 0, 0))
+    fps = font.render("TimeTillDeath: " + str(countdown+100 - int(start_time)), True, (0, 0, 0))
     screen.blit(fps, (10, 50))
-    if (countdown+10 - int(start_time))<1:
+    if (countdown+100 - int(start_time))<1:
         countdown=1000000000000
         r = requests.post('http://'+ipadress+':5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
     if cooldown > 0:
