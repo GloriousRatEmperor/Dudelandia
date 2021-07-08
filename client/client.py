@@ -1650,7 +1650,7 @@ while running:
             e.A[0]=0
             e.helfloss=0
     else:
-        if to % 50 == 0:
+        if to % 300 == 0:
             for e in mobs:
                 if not borderY[0] - 1500 < e.Y + me.Y < borderY[1] + 1500:
                     mobs.remove(e)
