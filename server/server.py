@@ -78,7 +78,6 @@ def Dmgdone():
     update = jsonpickle.decode(request.get_data())
     pla=update[0]
     playrID=update[1]
-    print(update)
     for e in pla:
         for b in players:
             if b.ID==e[2]:
@@ -113,16 +112,16 @@ def ShopUpdate():
 def playerdeath():
     global players,updates
     update = jsonpickle.decode(request.get_data())
-    for e in shops:
-        if e.ID==update[0]:
-            newshop=shop()
-            for b in players:
-                if not b.ID==update[1]:
-                    b.updates.append([0,[e.ID,newshop]])
-            shops.append(newshop)
-            shops.remove(e)
-            return jsonpickle.encode(newshop)
-            break
+    if len(players) == 2:
+        for e in players:
+            e.updates.append([4, [1, update]])
+    else:
+        for e in players:
+            if e.ID==update:
+                players.remove(e)
+            else:
+                e.updates.append([4, [0,update]])
+    return jsonpickle.encode(0)
 @app.route('/MoobUpdate', methods = ['POST'])
 def MoobUpdate():
     global moobs,updates

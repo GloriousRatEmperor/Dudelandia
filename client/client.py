@@ -387,7 +387,7 @@ class mob(pygame.sprite.Sprite):
         self.H = [H, H]
         self.N = N
         self.EX = 0
-        self.loot = random.choice([(self.A[1] * self.H[1]) // 10, Loot])
+        self.loot = random.choice([(self.H[1]), Loot])
         self.EY = 0
         self.tired = [1, 200]
         self.s = self.I.get_size()
@@ -562,7 +562,7 @@ def shopreplace(Replacement):
             break
     shops.append(tile(Replacement[1].X, Replacement[1].Y, shoptile, Replacement[1].ID))
 def draw2():
-    global PXSPD, PYSPD, h, w
+    global PXSPD, PYSPD, h, w,moving
     for e in tiles:
         if e.X<=-400-me.X:
             tiles.append(tile(e.X+2400,e.Y, grases[random.randint(0, 4)]))
@@ -585,6 +585,7 @@ def draw2():
             if h // 2 + e.s[1] > e.Y + me.Y + e.s[1] > h // 2:
                 PXSPD = 0
                 PYSPD = 0
+                moving = 0
                 r = requests.post('http://'+ipadress+':5000/ShopUpdate', headers=headers, data=jsonpickle.encode([e.ID,me.ID]))
                 shoops = jsonpickle.decode(r.text)
                 shops.append(tile(shoops.X, shoops.Y, shoptile, shoops.ID))
@@ -833,7 +834,7 @@ def lootem(ene):
             money += e
     loot = []
 #for e in range(100):
-#    lootem(genmob(random.randint(1,6)))
+    #lootem(genmob(random.randint(1,6)))
 def equippedArmr(armor):
     global PATC, Activearmor, Activearmor, PlayerSize, PSPECIAL,Patcsped,me,PASPE,PARMR,PPARMR
     armor.item[2] = pygame.transform.smoothscale(armor.item[2],
@@ -1444,7 +1445,7 @@ def atcright(a, f):
                              (truess[0] + truess[1]) // 4 + PRange[a.power[1]]):
                     firsthit += 1
                     if arena==3:
-                        e.A[0]=PATC[a.power[1]]
+                        e.A[0]+=PATC[a.power[1]]
                     else:
                         e.H[0] -= PATC[a.power[1]]
                     for b in range(len(PSPECIAL)):
@@ -1496,7 +1497,7 @@ def enewin():
         dista=flont.render(str("ENEMIES HAVE DESTROYED YOU!"), True, (0,0,0))
         screen.blit((dista), (50, h//2))
         pygame.display.update()
-
+timeout=0
 helth=0
 def Murderkill(lols):
     global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, PSPE, PXSPD, PYSPD,arena,mobs
@@ -1504,30 +1505,38 @@ def Murderkill(lols):
     PYSPD = 0
     mobs=[]
     chosen=[]
-    me.X = 0
-    me.Y = 0
-    Px = 0
-    Py = 0
     ArenaSize = arenaIMG.get_size()
+    me.X = random.randint(-(ArenaSize[0] - PlayerSize[0]) // 2 - w // 2,(ArenaSize[0] - PlayerSize[0]) // 2 - w // 2)
+    me.Y = random.randint(-(ArenaSize[1] - PlayerSize[1]) // 2 - h // 2, (ArenaSize[1] - PlayerSize[1]) // 2 - h // 2)
+    me.H[0]=me.H[1]
+    Px = random.randint(-(ArenaSize[0] - PlayerSize[0]) // 2 - w // 2,(ArenaSize[0] - PlayerSize[0]) // 2 - w // 2)
+    Py = random.randint(-(ArenaSize[1] - PlayerSize[1]) // 2 - h // 2, (ArenaSize[1] - PlayerSize[1]) // 2 - h // 2)
     borderXX = [-(ArenaSize[0] - PlayerSize[0]) // 2 - w // 2, (ArenaSize[0] - PlayerSize[0]) // 2 - w // 2]
     borderYY = [-(ArenaSize[1] - PlayerSize[1]) // 2 - h // 2, (ArenaSize[1] - PlayerSize[1]) // 2 - h // 2]
     arena=3
-    print(lols)
     for e in lols[0]:
         if not e.ID==me.ID:
             mobs.append(mob(700, 700, [playerIMGcrpd, playerIMGcrpd], 0, 'Player',
                             [], 10000, [0,0],50, weapons[4],e.ID,1))
+to=0
 def enedead(didIwin):
     global mobs
-    if didIwin==-1:
+    if didIwin[0]==1:
         while True:
-            itemnam = flint.render("YOU WIN", True, (0, 255, 0))
-            screen.blit((itemnam), (100, h * 0.4))
-        else:
-            for e in mobs:
-                if e.ID == didIwin:
-                    mobs.remove(e)
-
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.mod & pygame.KMOD_ALT:
+                        if event.key == pygame.K_F4:
+                            raise SystemExit
+            screen.fill((0, 186, 0))
+            dista = flont.render(str("YOU HAVE DEFEATEN THEM ALL!"), True, (0, 0, 0))
+            screen.blit((dista), (50, h // 2))
+            pygame.display.update()
+    else:
+        for e in mobs:
+            if e.ID == didIwin[1]:
+                mobs.remove(e)
+timeouter=1
 updatelist=[shopreplace,moobreplace,count,Murderkill,enedead]
 while running:
     XX = pygame.mouse.get_pos()
@@ -1606,6 +1615,9 @@ while running:
         borderY = [(h - ArenaSize[1]) // 2 + Py, (h - ArenaSize[1]) // 2 + Py + ArenaSize[1]]
         draw1()
     elif arena==3:
+        if int(time.time())>timeouter:
+            timeouter = int(time.time())
+            timeout+=5
         borderX = [(w - ArenaSize[0]) // 2 + Px, (w - ArenaSize[0]) // 2 + Px + ArenaSize[0]]
         borderY = [(h - ArenaSize[1]) // 2 + Py, (h - ArenaSize[1]) // 2 + Py + ArenaSize[1]]
         draw7()
@@ -1623,12 +1635,13 @@ while running:
                         pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(b.x + me.X, b.y + me.Y - 20, PlayerSizecrpd[1], 10))
                         pygame.draw.rect(screen, (255, 0, 0), pygame.Rect(b.x + me.X, b.y + me.Y - 20, PlayerSizecrpd[1]*e.H[0]/e.H[1], 10))
                         b.helfloss=b.H[1]-b.H[0]
+                        b.H[0]=b.H[1]
         r = requests.post('http://'+ipadress+':5000/Dmgdone', headers=headers, data=jsonpickle.encode([[[e.helfloss,e.A[0],e.ID] for e in mobs],me.ID]))
         heh = jsonpickle.decode(r.text)
         if heh[1] > PARMR:
-            me.H[0] -= (heh[1] - PARMR) / (8 + max(PARMR, 0) / 10)
+            me.H[0] -= (((heh[1] - PARMR) / (8 + max(PARMR, 0)) / 10)*timeout)
         if heh[0] > PPARMR:
-            me.H[0] -= (heh[0] - PPARMR) / (8 + max(PPARMR, 0) / 10)
+            me.H[0] -= (((heh[0] - PPARMR) / (8 + max(PPARMR, 0)) / 10)*timeout)
         if me.H[0]<0:
             r = requests.post('http://'+ipadress+':5000/playerdeath', headers=headers,
                               data=jsonpickle.encode(me.ID))
@@ -1637,7 +1650,7 @@ while running:
             e.A[0]=0
             e.helfloss=0
     else:
-        if int(ti) % 15 == 0:
+        if to % 50 == 0:
             for e in mobs:
                 if not borderY[0] - 1500 < e.Y + me.Y < borderY[1] + 1500:
                     mobs.remove(e)
@@ -1648,19 +1661,18 @@ while running:
             for _ in range(10):
                 poser=random.randint(1,4)
                 if poser==1:
-                    xposs=random.randint(-100,w+100)
-                    yposs = random.randint(-200, -100)
-                if poser==2:
-                    xposs=random.randint(-100,w+100)
-                    yposs = random.randint(h+100, h+200)
+                    xposs=random.randint(-200,w+100)
+                    yposs = -1000
+                elif poser==2:
+                    xposs=random.randint(-200,w+100)
+                    yposs = h+200
                 elif poser==3:
-                    yposs = random.randint(-100, h + 100)
-                    xposs = random.randint(-200, -100)
+                    xposs = -1000
+                    yposs = random.randint(-100, h + 200)
                 else:
-                    yposs=random.randint(-100,h+100)
-                    xposs = random.randint(w+100, w+200)
-                mobs.append(genmob(random.randint(1,6),[xposs,yposs]))
-
+                    xposs = w+200
+                    yposs = random.randint(-100, h + 100)
+                mobs.append(genmob(random.randint(1,6),[xposs-me.X,yposs-me.Y]))
         draw2()
         # for e in mobs:
         #     if distanceM(e.X + me.X + e.s[0] // 2, e.Y + me.Y + e.s[1] // 2, w // 2, h // 2, 100):
@@ -1732,9 +1744,9 @@ while running:
     ############           ############           ############           ############
     fps = font.render("FPS: " + str(time.time() - start_time), True, (0, 0, 0))
     screen.blit(fps, (10, 20))
-    fps = font.render("TimeTillDeath: " + str(countdown+100 - int(start_time)), True, (0, 0, 0))
+    fps = font.render("TimeTillDeath: " + str(countdown+20 - int(start_time)), True, (0, 0, 0))
     screen.blit(fps, (10, 50))
-    if (countdown+100 - int(start_time))<1:
+    if (countdown+20 - int(start_time))<1:
         countdown=1000000000000
         r = requests.post('http://'+ipadress+':5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
     if cooldown > 0:
@@ -1753,3 +1765,4 @@ while running:
 
     pygame.display.update()
     ti += (time.time() - start_time)*50
+    to += 1
