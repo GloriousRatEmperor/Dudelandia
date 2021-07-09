@@ -1556,7 +1556,7 @@ def moobreplace(Replacement):
         if e.ID==Replacement[0]:
             moobs.remove(e)
             break
-    moobs.append(moob(Replacement[1].X,Replacement[1].Y,mobtile,Replacement[1].ID,Replacement[1].enemies))
+    moobs.append(moob(Replacement[1].X,Replacement[1].Y,mobtile,Replacement[1].ID,Replacement[1].enemies,Replacement[1].difficulty))
 def enewin():
     while True:
         for event in pygame.event.get():
