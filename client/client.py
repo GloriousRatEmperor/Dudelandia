@@ -1598,6 +1598,7 @@ def Murderkill(lols):
             mobs.append(mob(700, 700, [playerIMGcrpd, playerIMGcrpd], 0, 'Player',
                             [], 10000, [0,0],50, weapons[4],e.ID,1))
 to=0
+players=[]
 def enedead(didIwin):
     global mobs
     if didIwin[0]==1:
@@ -1704,8 +1705,6 @@ while running:
         borderX = [(w - ArenaSize[0]) // 2 + Px, (w - ArenaSize[0]) // 2 + Px + ArenaSize[0]]
         borderY = [(h - ArenaSize[1]) // 2 + Py, (h - ArenaSize[1]) // 2 + Py + ArenaSize[1]]
         draw7()
-        r = requests.get('http://'+ipadress+':5000/players')
-        players = jsonpickle.decode(r.text)
         for e in players:
             if e.ID != me.ID:
                 screen.blit(playerIMG, (e.X + me.X + 895, e.Y + me.Y + 465))
@@ -1759,18 +1758,18 @@ while running:
                     yposs = random.randint(-100, h + 100)
                 mobs.append(genmob(random.randint(1,6),[xposs-me.X,yposs-me.Y]))
         draw2()
-        # for e in mobs:
-        #     if distanceM(e.X + me.X + e.s[0] // 2, e.Y + me.Y + e.s[1] // 2, w // 2, h // 2, 100):
-        #         fight([e])
-        r = requests.post('http://' + ipadress + ':5000/PlayerUpdate', headers=headers, data=jsonpickle.encode(me))
-        decoded=jsonpickle.decode(r.text)
-        newupdates=decoded[1]
-        for e in newupdates:
-            updatelist[e[0]](e[1])
-        players = decoded[0]
         for e in players:
             if e.ID != me.ID:
                 screen.blit(playerIMG, (e.X + me.X + 895, e.Y + me.Y + 465))
+        # for e in mobs:
+        #     if distanceM(e.X + me.X + e.s[0] // 2, e.Y + me.Y + e.s[1] // 2, w // 2, h // 2, 100):
+        #         fight([e])
+    r = requests.post('http://' + ipadress + ':5000/PlayerUpdate', headers=headers, data=jsonpickle.encode(me))
+    decoded=jsonpickle.decode(r.text)
+    newupdates=decoded[1]
+    for e in newupdates:
+        updatelist[e[0]](e[1])
+    players = decoded[0]
 
     screen.blit(playerIMG, ((w - PlayerSize[0]) // 2, (h - PlayerSize[1]) // 2))
     pygame.draw.rect(screen, (0, 0, 0),
@@ -1833,9 +1832,9 @@ while running:
     ############           ############           ############           ############
     fps = font.render("FPS: " + str(time.time() - start_time), True, (0, 0, 0))
     screen.blit(fps, (10, 20))
-    fps = font.render("TimeTillDeath: " + str(countdown+700 - int(start_time)), True, (0, 0, 0))
+    fps = font.render("TimeTillDeath: " + str(countdown+9 - int(start_time)), True, (0, 0, 0))
     screen.blit(fps, (10, 50))
-    if (countdown+700 - int(start_time))<1:
+    if (countdown+9 - int(start_time))<1:
         countdown=1000000000000
         r = requests.post('http://'+ipadress+':5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
     if cooldown > 0:

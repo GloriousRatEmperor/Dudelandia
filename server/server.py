@@ -146,6 +146,7 @@ def PlayerUpdate():
             e.Y=-update.Y
             e.H=update.H
             updates=e.updates
+            e.updates=[]
             break
     return jsonpickle.encode([players,updates])
 
@@ -163,6 +164,7 @@ def giveupdate():
     return jsonpickle.encode([])
 @app.route('/players', methods = ['GET'])
 def playerget():
+    global players
     return jsonpickle.encode(players)
 @app.route('/game/<name>', methods = ['GET', 'POST'])
 def game_endpoint(name):
