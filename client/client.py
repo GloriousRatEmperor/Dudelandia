@@ -52,7 +52,7 @@ def img(imgname):
 
 fontBG = pygame.font.Font('freesansbold.ttf', 50)
 font = pygame.font.Font('freesansbold.ttf', 25)
-font = pygame.font.Font('freesansbold.ttf', 25)
+fpont = pygame.font.Font('freesansbold.ttf', 20)
 fint = pygame.font.Font('freesansbold.ttf', 150)
 flont = pygame.font.Font('freesansbold.ttf', 80)
 flint = pygame.font.Font('freesansbold.ttf', 45)
@@ -171,7 +171,7 @@ def slow(e, multiplier, nothin):
     e.S[0] /= multiplier[1]
     timedstuffs.append(timer(spdup, ti + multiplier[2], [e, multiplier[1]], e.ID))
     timedstuffs.sort(key=bythetime)
-
+mobspd=0.8
 
 def spdup(t, multiplier):
     multiplier[0].EX *= multiplier[1]
@@ -206,7 +206,17 @@ choppercrpd=img('chopperA.png')
 zandalar=img('zandalar.png')
 lava=img('lava.png')
 zandalarcrpd=img('zandalarcrpd.png')
-
+ice=img('icesword.png')
+ice2=img('iceswordcrpd.png')
+ash=img('ashenblade.png')
+ash2=img('ashenbladecrpd.png')
+gun=img('gunsaber.png')
+gun2=img('gunsabercropped.png')
+torso=img('torsoarmor.png')
+torso2=img('torsoarmorcrpd.png')
+demon=img('demonplate.png')
+deflect=img('projectiledeflector.png')
+life=img('lifegown.png')
 def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
     global weapons, armors
     if gouit == 0:
@@ -233,35 +243,35 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
 
         #X, Y, I, A,speed, SPE, cost
 
-    weapons = [[-50, 40, [chopper, choppercrpd], 6 + luck // 2,0, [], 100 + luck*3,
+    weapons = [[-50, 40, [chopper, choppercrpd], 6 + luck // 1.5,0, [], 100 + luck*3,
                 [quality + ' Chopper', 'quite a basic sword, decently long though, costs:' + str(100 + luck*3)]]
-        , [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 3,-2-luck//15, [], 80 + luck**2,
+        , [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 2.5,-2-luck//15, [], 80 + luck**2,
            [quality + ' Zandalari meatcleaver', 'short and weak, but fast costs:' + str(80 + luck**2)]]
-        , [-50, 40, [img('icesword.png'), img('iceswordcrpd.png')], 15 + luck // 4,0-luck//20,
-           [[1, 2], 0, 0, 100, slow, ['*line 1', 1.1 + luck / 60, 80 + luck * 2]], 250 + luck*luck*2,
+        , [-50, 40, [ice, ice2], 30 + luck // 2,0-luck//15,
+           [[1, 2], 0, 0, 100, slow, ['*line 1', 1.07 + luck / 80, 65 + luck/1.5]], 250 + luck*luck*2,
            [quality + ' Frost-Slicer',
             'freeze amount and duration is relient on quality. can be very powerful against meele foes. costs:' + str(
                 250 + luck*luck*2)]]
-        , [-50, 40, [img('ashenblade.png'), img('ashenbladecrpd.png')], 75 + luck*20, 0 - luck // 20,
+        , [-50, 40, [ash, ash2], 75 + luck*20, 0 - luck // 20,
             # Speed,attack,pierce,sametarget,IMG
            [[1,2], 0, 0, 100, shoot, [0, 7, 5+luck*1.5*bigmult,100,-1,pygame.transform.smoothscale(lava, (int(500 * bigmult), int(250 * bigmult)))]], (10000 + luck*luck*80)*bigmult,
            [quality + ' Godslayer',
             'throws lava at enemies hit, immensly expensive. costs:' + str(
                 int((5000 + luck*luck*80)*bigmult))]]
-        , [-50, 40, [img('gunsaber.png'), img('gunsabercropped.png')], luck // 10,4-luck//10,
-           [[2], 1, 1, 0, shoot, [0, 25, luck * 2+luck**2*0.1, 1, -1, pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]], 50 * luck+luck**2, [quality + ' Gun',
+        , [-50, 40, [gun, gun2], luck // 15,4-luck//10,
+           [[2], 1, 1, 0, shoot, [0, 25, luck * 0.5+luck**2*0.05, 1, -1, pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]], 50 * luck+luck**2, [quality + ' Gun',
                                                                                   'guns can be utter failiures, or strong, but it will reflect on the price costs:' + str(
                                                                                       50 * luck+luck**2)]]]
 
           #I, Armor, PArmor, helf, SPE, cost
 
-    armors =[[[img('torsoarmor.png'), img('torsoarmorcrpd.png')], 5 + luck // 5, 2 + luck // 10, int(100+luck*luck/5*(bigmult*3-2)), [], 400+bigmult*2000 + luck*luck//2,
+    armors =[[[torso, torso2], 5 + luck // 3, 2 + luck // 8, int(100+luck*luck/5*(bigmult*3-2)), [], 400+bigmult*2000 + luck*luck//2,
                 [quality + ' Torsoarmor', 'quite a basic armorpiece, still much better than nothing though, costs:' + str(400+bigmult*1500 + luck*luck//2)]],
-    [[img('demonplate.png'), img('demonplate.png')], int((35 + luck*1.5)*(bigmult*3-2)),4 + luck // 7,int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*2000 + int(luck*luck*1.5),
+    [[demon, demon], int((35 + luck*1.5)*(bigmult*3-2)),4 + luck // 7,int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*2000 + int(luck*luck*1.5),
                 [quality + 'Demonplate', 'has a lot of armor, not so much health though, costs:' + str(600+bigmult*2000 + int(luck*luck*1.5))]],
-    [[img('projectiledeflector.png'), img('projectiledeflector.png')], (7 + int(luck*0.3))*(bigmult*3-2),(15 + luck)*(bigmult*3-2),int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*1500 + int(luck*luck*1.5),
+    [[deflect, deflect], (7 + int(luck*0.3))*(bigmult*3-2),(10 + luck*2)*(bigmult*3-2),int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*1500 + int(luck*luck*1.5),
                 [quality + 'The Deflector', 'has some armor, not much health, but protects from projectiles (and special sources of damage) costs:' + str(600+bigmult*1500 + int(luck*luck*1.5))]],
-    [[img('lifegown.png'), img('lifegown.png')], -45 - int(luck*2.5),-45 - int(luck*2.5),int(600+luck*luck*1.8*(bigmult*3-2)), [], 600 +bigmult*2000 + int(luck*luck*1.5),
+    [[life, life], -45 - int(luck*1.5)-400*(bigmult*2-2),-70 - int(luck*1.5)-400*(bigmult*2-2),int(600+luck*luck*1.8+ 10000*(bigmult*2-2)), [], 600 +bigmult*2000 + int(luck*luck*1.5),
                 [quality + 'Lifegown', 'has a lot of helf, not so healthy though, considering the negative armor, costs:' + str(600+bigmult*2000 + int(luck*luck*1.5))]]]
 
     if bigmult !=1:
@@ -279,6 +289,7 @@ orcIMG=img('orc.png')
 orcatc=[img('orcatc.png'),img('orc.png')]
 fireball=img('fireball.png')
 dopii=img('dope.png')
+grasatacbig = [pygame.transform.smoothscale(img('grasatc1.png'),(400,400)), pygame.transform.smoothscale(img('grasatc2.png'),(400,400)), pygame.transform.smoothscale(img('grasatc2.png'),(400,400))]
 grasatac = [img('grasatc1.png'), img('grasatc2.png'), img('grasatc2.png')]
 dope=pygame.transform.smoothscale(dopii,(50,50))
 dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscale(dopii,(100,100)),pygame.transform.smoothscale(dopii,(125,125)),
@@ -288,13 +299,14 @@ dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscal
          pygame.transform.smoothscale(dopii,(1600,1600)),pygame.transform.smoothscale(dopii,(1900,1900)),pygame.transform.smoothscale(dopii,(3000,3000)),
          pygame.transform.smoothscale(dopii,(5000,5000)),pygame.transform.smoothscale(dopii,(15000,15000))]
 def genmob(mobnumber, position=[700,700]):
+    weaponsRANDOM(0)
     if mobnumber==1:
         MOB=mob(position[0], position[1], [grases[random.randint(0, 4)], grasatac], random.randint(3, 5), 'grass',
                         [atcup, [[1, 2, 3], 3, 140], shoot, [[4], 2, 10, -1, 3, mosh]], random.randint(1, 170),
                         [15, 15],140, weapons[0])
     elif mobnumber == 2:
-        MOB=mob(position[0], position[1], [grases[random.randint(0, 4)], grasatac], random.randint(3, 5), 'grass',
-                        [atcup, [[1, 2, 3], 3, 140], shoot, [[4], 2, 10, -1, 3, mosh]], random.randint(1, 170),
+        MOB=mob(position[0], position[1], [pygame.transform.smoothscale(grases[random.randint(0, 4)],(400,400)), grasatacbig], 5.5, 'grass',
+                        [atcup, [[1, 2, 3], 4, 140], shoot, [[4], 5.6, 30, -1, 3, pygame.transform.smoothscale(mosh,(942,565))]], random.randint(600, 1000),
                         [15, 15],140, weapons[4])
     elif mobnumber == 3:
         MOB=mob(position[0], position[1], [dopusIMG, dopusatc, [60, 0, 239, 287]], random.randint(6, 8), 'dopus',
@@ -311,15 +323,21 @@ def genmob(mobnumber, position=[700,700]):
                         [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250, [30, 30],50, weapons[4])
     return MOB
 class moob(pygame.sprite.Sprite):
-    def __init__(self,X,Y,I,ID,Enemies):
+    def __init__(self,X,Y,I,ID,Enemies,difficulty):
         self.ID=ID
         self.X=X
         self.Y=Y
         self.I = I
         self.s = self.I.get_size()
         self.enemies = []
-        for e in Enemies:
-            mawb=genmob(e)
+        self.e=Enemies
+        self.d = difficulty
+    def enter(self):
+        for e in range(self.e):
+            mawb=genmob(random.randint(1,6))
+            mawb.H[0]*=self.d / 100
+            mawb.H[1] *=self.d / 100
+            mawb.A[0]*= self.d / 100
             mawb.X=random.randint(-2000,2000)
             mawb.Y = random.randint(-2000, 2000)
             self.enemies.append(mawb)
@@ -367,7 +385,7 @@ class timer(pygame.sprite.Sprite):
 class mob(pygame.sprite.Sprite):
     def __init__(self, X, Y, I, S, N, SPE, H, A,atcspd, Loot, id=0, nevaatc=0):
         super(mob, self).__init__()
-
+        self.fliped=1
         self.atcspd = atcspd
         self.X = X
         self.attacking = nevaatc
@@ -599,11 +617,6 @@ def draw2():
                 PXSPD = 0
                 PYSPD = 0
                 mobbin(e)
-                r = requests.post('http://'+ipadress+':5000/MoobUpdate', headers=headers, data=jsonpickle.encode([e.ID,me.ID]))
-                shoops = jsonpickle.decode(r.text)
-                moobs.append(moob(shoops.X,shoops.Y,mobtile,shoops.ID,shoops.enemies))
-                moobs.remove(e)
-                e.kill
     for e in mobs:
         screen.blit(e.I, (e.x + me.X, e.y + me.Y))
         pygame.draw.rect(screen, (0, 0, 0), pygame.Rect(e.x + me.X - 10, e.y + me.Y - 20, e.s[0], 10))
@@ -662,8 +675,33 @@ def arrowmov():
         e.Y += e.SY
         e.x = int(e.X)
         e.y = int(e.Y)
-
-
+mobspd=0.8
+def playerdown():
+    global me,enearrow,allyarrow,arrows,moving,mobspd
+    holo = 1000
+    mobspd=0.8
+    arrows=[]
+    moving=0
+    enearrow=[]
+    allyarrow=[]
+    for e in mobs:
+        e.H[0]=e.H[1]
+    while holo > 0:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_f:
+                    holo -=20
+                if event.mod & pygame.KMOD_ALT:
+                    if event.key == pygame.K_F4:
+                        raise SystemExit
+        screen.fill((255, 0, 0))
+        distacoo=font.render("press f to pay respects to yourself and respawn faster", True, (0,0,0))
+        screen.blit(distacoo, (300, h//1.7))
+        dista = flont.render("YOU DEAD, RESPAWN IN " + str(int(holo)), True, (0, 0, 0))
+        screen.blit((dista), (10, h//2))
+        pygame.display.update()
+        holo -= 0.5
+    me.H[0] = me.H[1]+10000000000
 def arrowkill():
     global me, arrows, allyarrow, enearrow, mobs
     for e in arrows:
@@ -687,6 +725,8 @@ def arrowkill():
                 if e.Y + Py - e.s[1] // 2 < h // 2 < e.Y + Py + e.s[1] // 2:
                     if e.dmg>PPARMR:
                         me.H[0] -= (e.dmg-PPARMR)/(8+max(PPARMR,0)/10)*8
+                        if me.H[0]<0:
+                            playerdown()
                     e.P -= 1
                     if e.P == 0:
                         arrows.remove(e)
@@ -762,6 +802,13 @@ def mobmov():
                     spdy = spdx * ySo / xSo
                 e.EX = spdx
                 e.EY = spdy
+                if e.EX > 0:
+                    if e.fliped == 0:
+                        e.fliped = 1
+                        e.I = pygame.transform.flip(e.I, True, False)
+                elif e.fliped == 1:
+                    e.I = pygame.transform.flip(e.I, True, False)
+                    e.fliped = 0
             elif not arena == 1:
                 e.H[0] = e.H[1]
         else:
@@ -770,11 +817,15 @@ def mobmov():
                 e.tired[0] = e.tired[1]
                 e.EX = (random.uniform(-e.S[0], e.S[0]))/2
                 e.EY = (random.uniform(-e.S[0], e.S[0]))/2
-        mod=1.8
-        if arena==1:
-            mod=1
-        e.X += e.EX*mod*(time.time() - start_time)*70
-        e.Y += e.EY*mod*(time.time() - start_time)*70
+                if e.EX > 0:
+                    if e.fliped == 0:
+                        e.fliped = 1
+                        e.I = pygame.transform.flip(e.I, True, False)
+                elif e.fliped == 1:
+                    e.I = pygame.transform.flip(e.I, True, False)
+                    e.fliped = 0
+        e.X += e.EX*min((time.time() - start_time)*70,5)*2*mobspd
+        e.Y += e.EY*min((time.time() - start_time)*70,5)*2*mobspd
         e.x = int(e.X)
         e.y = int(e.Y)
 
@@ -796,8 +847,7 @@ def distanceM(eneX, eneY, bulX, bulY, o):
         return True
 
 def winfight():
-    global me, arena, Px, Py, loot, money, borderX, borderY, borderXX, borderYY, PSPE
-    PSPE *= 2
+    global me, arena, Px, Py, loot, money, borderX, borderY, borderXX, borderYY
     arena = 0
     me.Y = PY1
     me.X = PX1
@@ -813,7 +863,6 @@ def winfight():
                 ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5], e[6]))
             else:
                 unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5]))
-            weaponsRANDOM(0)
         else:
             money += e
     loot = []
@@ -829,12 +878,9 @@ def lootem(ene):
                 ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5],e[6]))
             else:
                 unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5]))
-            weaponsRANDOM(0)
         else:
             money += e
     loot = []
-#for e in range(100):
-    #lootem(genmob(random.randint(1,6)))
 def equippedArmr(armor):
     global PATC, Activearmor, Activearmor, PlayerSize, PSPECIAL,Patcsped,me,PASPE,PARMR,PPARMR
     armor.item[2] = pygame.transform.smoothscale(armor.item[2],
@@ -1027,12 +1073,17 @@ def menu():
             else:
                 screen.blit(g.item[2], ((XX[0] - g.item[4] // 2, XX[1] - g.item[5] // 2)))
         draw00(0)
-        stats = font.render('attack: ' + str(PATC[1]) + ',' + str(PATC[0]), True, (0, 0, 0))
+        stats = font.render('attack: ' + str(int(PATC[1])) + ',' + str(int(PATC[0])), True, (0, 0, 0))
         screen.blit(stats, ((15, 800)))
         stats = font.render('health: ' + str(int(me.H[0])) + '/' + str(int(me.H[1])), True, (0, 0, 0))
         screen.blit(stats, ((15, 825)))
+        stats = font.render('money: ' +str(int(money)), True, (0, 0, 0))
+        screen.blit(stats, ((15, 850)))
+        stats = fpont.render('physical armour: ' +str(int(PARMR)), True, (0, 0, 0))
+        screen.blit(stats, ((15, 875)))
+        stats = fpont.render('spell armour: ' +str(int(PPARMR)), True, (0, 0, 0))
+        screen.blit(stats, ((15, 895)))
         pygame.display.update()
-
 def getarmor(theitem):
     theitem = theitem[0]
     unActivearmor.append(Armor(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4],theitem[5]))
@@ -1041,11 +1092,12 @@ def getweapon(theitem):
     ActiveWeapon.append(Weapon(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4], theitem[5],theitem[6]))
 
 book = img('book.png')
+beefbook = img('sandwich.png')
 moobIMG=pygame.transform.smoothscale(img('moobIMG.png'), (w, h))
 fioght = img('fight.png')
 killrog=0
-def mobbin(moob):
-    global breakme, buttons,moobs,killrog
+def mobbin(mooob):
+    global breakme, buttons,moobs,killrog,Py
     breakme = 0
     buttons.append(button(int(w * .5), int(h * 0.88), fioght, 0,
                           [0]))
@@ -1066,6 +1118,7 @@ def mobbin(moob):
                     if event.key == pygame.K_F4:
                         raise SystemExit
         if breakme == 1:
+            Py-=200
             breakme = 0
             buttons = []
             break
@@ -1073,11 +1126,20 @@ def mobbin(moob):
         screen.blit(moobIMG, ((0, 0)))
         draw00(0)
         if killrog==1:
+            mooob.enter()
+            for e in mooob.enemies:
+                mobs.append(e)
+            loot.append(mooob.d*5)
+            print(mooob.d*5)
+            fight(mooob.enemies)
+            r = requests.post('http://' + ipadress + ':5000/MoobUpdate', headers=headers,
+                              data=jsonpickle.encode([mooob.ID, me.ID]))
+            shoops = jsonpickle.decode(r.text)
+            moobs.append(moob(shoops.X, shoops.Y, mobtile, shoops.ID, shoops.enemies,shoops.difficulty))
+            moobs.remove(mooob)
+            mooob.kill
             killrog=0
             buttons = []
-            for e in moob.enemies:
-                mobs.append(e)
-            fight(moob.enemies)
             break
 
         pygame.display.update()
@@ -1085,8 +1147,13 @@ def mobbin(moob):
 def shoppin():
     global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons
     breakme = 0
-    buttons.append(button(int(w * .78), int(h * 0.78), book, atcP,
-                          [10, [1, 0, 0, 2, 0], ['Book of war', '+1 atttack!, how amazing']]))
+    bok=random.randint(0,100)
+    if bok==100:
+        buttons.append(button(int(w * .78), int(h * 0.78), beefbook, SANDWICH,
+                              [500, [1, 0, 0, 2, 0], ['Shopkeeper\'s sandwich', 'my sandwich? fine it is yours for 500 gold']]))
+    else:
+        buttons.append(button(int(w * .78), int(h * 0.78), book, atcP,
+                              [10, [1, 0, 0, 2, 0], ['Book of war', '+1 atttack!, how amazing']]))
     for e in range(3):
         weaponsRANDOM(0)
         purchase = weapons[random.randint(0, len(weapons) - 1)]
@@ -1228,7 +1295,7 @@ r = requests.get('http://'+ipadress+':5000/mobbos')
 mooobs = jsonpickle.decode(r.text)
 moobs=[]
 for e in mooobs:
-    moobs.append(moob(e.X,e.Y,mobtile,e.ID,e.enemies))
+    moobs.append(moob(e.X,e.Y,mobtile,e.ID,e.enemies,e.difficulty))
 
 while True:
     for event in pygame.event.get():
@@ -1289,7 +1356,18 @@ texts = []
 atttacksIMG = [img("R1.png"), img("R2.png"), img("L1.png"), img("L2.png"), img("man2.png")]
 ###########################################################################
 nows = 0
-
+def heal(nobodycares,amount,nomatter):
+    global me
+    # [health to [0],health to [1]]
+    me.H[1]+=amount[1]
+    me.H[0] += amount[0]
+sandw=img("sand.png")
+def SANDWICH(nomatter):
+    global me, ActiveWeapon
+    # X, Y, I, A,speed, SPE, cost
+    #[0, 25, luck * 0.5 + luck ** 2 * 0.05, 1, -1,
+     #pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]]
+    ActiveWeapon.append(Weapon(-50, 40, [sandw,beefbook], 1, 0, [[2], 1, 1, 0, heal, [100,1]], 500))
 def atcP(multipliar):
     # multipliar(amount,way),timee,hand,first
     global PATC
@@ -1326,8 +1404,7 @@ def MobAttack(t, f):
     f[1] += 1
     if rolll > f[1] - 2:
         f[0].I = f[0].atcs[f[1] - 2]
-        if (f[0].X + f[0].s[0] // 2 + Px > w // 2):
-            f[0].I = pygame.transform.flip(f[0].I, True, False)
+        f[0].fliped = 1
         pastfart = f[0].s
         f[0].s = f[0].I.get_size()
         f[0].X -= (f[0].s[0] - pastfart[0]) // 2
@@ -1337,16 +1414,7 @@ def MobAttack(t, f):
             if f[0].A[0]>PARMR:
                 me.H[0] -= (f[0].A[0]-PARMR)/(8+max(PARMR,0)/10)*8
                 if me.H[0]<1:
-                    holo=1
-                    while holo==1:
-                        for event in pygame.event.get():
-                            if event.type == pygame.KEYDOWN:
-                                if event.mod & pygame.KMOD_ALT:
-                                    if event.key == pygame.K_F4:
-                                        holo=0
-                                        me.H[0]=me.H[1]
-                        screen.fill((255,0,0))
-                        pygame.display.update()
+                    playerdown()
         for e in range((len(f[0].SPE)) // 2):
             if f[1] in f[0].SPE[e * 2 - 1][0]:
                 f[0].SPE[e * 2 - 2](f[0], f[0].SPE[e * 2 - 1], f[1])
@@ -1365,16 +1433,19 @@ def MobAttack(t, f):
         f[0].Y -= (f[0].s[1] - pastfart[1]) // 2
 dpressed = 0
 apressed = 0
-def flipmob(self,uuu):
-    global timedstuffs
-    for e in mobs:
-        if e.EX>0:
-            e.I=e.i
-        elif e.I==e.i:
-            e.I = pygame.transform.flip(e.i, True, False)
-    self.T+=200
-    timedstuffs.sort(key=bythetime)
-timedstuffs.append(timer(flipmob, ti, [0, False], 0))
+# def flipmob(self,uuu):
+#     global timedstuffs
+#     for e in mobs:
+#         if e.EX>0:
+#             if e.fliped==0:
+#                 e.fliped=1
+#                 e.I = pygame.transform.flip(e.I, True, False)
+#         elif e.fliped==1:
+#             e.I = pygame.transform.flip(e.i, True, False)
+#             e.fliped =0
+#     self.T+=200
+#     timedstuffs.sort(key=bythetime)
+#timedstuffs.append(timer(flipmob, ti, [0, False], 0))
 def atcright(a, f):
     global playerIMG, arena, ActiveWeaponer, ActiveWeapon, cooldown,timedstuffs
     a.power[0] += 1
@@ -1499,8 +1570,16 @@ def enewin():
         pygame.display.update()
 timeout=0
 helth=0
+#for e in range(200):
+     #lootem(genmob(random.randint(1,6)))
+# weaponsRANDOM(0)
+# for e in range(100):
+#     getarmor([armors[random.randint(0,len(armors)-1)]])
+#weaponsRANDOM(30)
+#for e in range(10):
+    #getarmor([armors[ random.randint(0,len(armors)-1) ]])
 def Murderkill(lols):
-    global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, PSPE, PXSPD, PYSPD,arena,mobs
+    global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, PXSPD, PYSPD,arena,mobs
     PXSPD =0
     PYSPD = 0
     mobs=[]
@@ -1610,7 +1689,11 @@ while running:
         #    if PYSPD >0:
         #       PYSPD = 0
     screen.fill((200, 0, 0))
+    if me.H[0]>me.H[1]:
+        me.H[0]-=min(17000000,me.H[0]-me.H[1])
     if arena == 1:
+        if to % 300 == 0:
+            mobspd+=0.01
         borderX = [(w - ArenaSize[0]) // 2 + Px, (w - ArenaSize[0]) // 2 + Px + ArenaSize[0]]
         borderY = [(h - ArenaSize[1]) // 2 + Py, (h - ArenaSize[1]) // 2 + Py + ArenaSize[1]]
         draw1()
@@ -1638,10 +1721,12 @@ while running:
                         b.H[0]=b.H[1]
         r = requests.post('http://'+ipadress+':5000/Dmgdone', headers=headers, data=jsonpickle.encode([[[e.helfloss,e.A[0],e.ID] for e in mobs],me.ID]))
         heh = jsonpickle.decode(r.text)
+        heh[0]*=timeout
+        heh[1]*= timeout
         if heh[1] > max(0,PARMR):
-            me.H[0] -= (((heh[1] - PARMR) / (8 + max(PARMR, 0)) / 10)*timeout)
+            me.H[0] -= (heh[1] - PARMR) / (8 + max(PARMR, 0)) / 10
         if heh[0] > max(0,PPARMR):
-            me.H[0] -= (((heh[0] - PPARMR) / (8 + max(PPARMR, 0)) / 10)*timeout)
+            me.H[0] -= (heh[0] - PPARMR) / (8 + max(PPARMR, 0)) / 10
         if me.H[0]<0:
             r = requests.post('http://'+ipadress+':5000/playerdeath', headers=headers,
                               data=jsonpickle.encode(me.ID))
@@ -1677,8 +1762,12 @@ while running:
         # for e in mobs:
         #     if distanceM(e.X + me.X + e.s[0] // 2, e.Y + me.Y + e.s[1] // 2, w // 2, h // 2, 100):
         #         fight([e])
-        r = requests.get('http://'+ipadress+':5000/players')
-        players = jsonpickle.decode(r.text)
+        r = requests.post('http://' + ipadress + ':5000/PlayerUpdate', headers=headers, data=jsonpickle.encode(me))
+        decoded=jsonpickle.decode(r.text)
+        newupdates=decoded[1]
+        for e in newupdates:
+            updatelist[e[0]](e[1])
+        players = decoded[0]
         for e in players:
             if e.ID != me.ID:
                 screen.blit(playerIMG, (e.X + me.X + 895, e.Y + me.Y + 465))
@@ -1710,8 +1799,8 @@ while running:
             if xS < 0:
                 PXSPD *= -1
             PYSPD = PXSPD * yS / xS
-    Px -= PXSPD*(time.time() - start_time)*70
-    Py -= PYSPD*(time.time() - start_time)*70
+    Px -= PXSPD*min((time.time() - start_time)*70,5)
+    Py -= PYSPD*min((time.time() - start_time)*70,5)
     if distanceM(posofmousa[0] + me.X, posofmousa[1] + me.Y, w // 2, h // 2, 10):
         posofmousa = [1000000, 1000000]
         PXSPD = 0
@@ -1744,9 +1833,9 @@ while running:
     ############           ############           ############           ############
     fps = font.render("FPS: " + str(time.time() - start_time), True, (0, 0, 0))
     screen.blit(fps, (10, 20))
-    fps = font.render("TimeTillDeath: " + str(countdown+70 - int(start_time)), True, (0, 0, 0))
+    fps = font.render("TimeTillDeath: " + str(countdown+700 - int(start_time)), True, (0, 0, 0))
     screen.blit(fps, (10, 50))
-    if (countdown+70 - int(start_time))<1:
+    if (countdown+700 - int(start_time))<1:
         countdown=1000000000000
         r = requests.post('http://'+ipadress+':5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
     if cooldown > 0:
@@ -1756,12 +1845,6 @@ while running:
             e.F()
         else:
             break
-    requests.post('http://'+ipadress+':5000/PlayerUpdate',headers=headers,data=jsonpickle.encode(me))
-
-    r = requests.post('http://'+ipadress+':5000/MyUpdates',headers=headers,data=jsonpickle.encode(me.ID))
-    newupdates=jsonpickle.decode(r.text)
-    for e in newupdates:
-        updatelist[e[0]](e[1])
 
     pygame.display.update()
     ti += (time.time() - start_time)*50

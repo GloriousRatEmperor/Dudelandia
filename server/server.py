@@ -20,9 +20,8 @@ class moob(object):
         self.ID=moobID
         self.X=-20000 + 200 * random.randint(1, 199)
         self.Y=-20000 + 200 * random.randint(1, 199)
-        self.enemies = []
-        for e in range(random.randint(2,15)):
-            self.enemies.append(random.randint(1,6))
+        self.enemies = random.randint(3,9)
+        self.difficulty=int((20000+self.X+self.Y)/5)
 class player(object):
     def __init__(self):
         global playersID
@@ -146,8 +145,9 @@ def PlayerUpdate():
             e.X=-update.X
             e.Y=-update.Y
             e.H=update.H
+            updates=e.updates
             break
-    return '1'
+    return jsonpickle.encode([players,updates])
 
 @app.route('/MyUpdates', methods = ['POST'])
 def giveupdate():
@@ -161,6 +161,9 @@ def giveupdate():
             break
     print('clientnotfounderror')
     return jsonpickle.encode([])
+@app.route('/players', methods = ['GET'])
+def playerget():
+    return jsonpickle.encode(players)
 @app.route('/game/<name>', methods = ['GET', 'POST'])
 def game_endpoint(name):
     global f
@@ -171,10 +174,6 @@ def game_endpoint(name):
     else:
         f+=1
         return f"Hello, {name} {f}!"
-
-@app.route('/players')
-def getPlayers():
-    return jsonpickle.encode(players)
 
 @app.route('/start')
 def startdfhd():
