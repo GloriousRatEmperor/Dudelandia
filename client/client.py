@@ -233,15 +233,15 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
 
         #X, Y, I, A,speed, SPE, cost
 
-    weapons = [[-50, 40, [chopper, choppercrpd], 6 + luck // 2,0, [], 35 + 125 + luck*3,
-                [quality + ' Chopper', 'quite a basic sword, decently long though, costs:' + str(125 + luck*3)]]
-        , [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 3,-2-luck//15, [], 150 + luck**2,
+    weapons = [[-50, 40, [chopper, choppercrpd], 6 + luck // 2,0, [], 100 + luck*3,
+                [quality + ' Chopper', 'quite a basic sword, decently long though, costs:' + str(100 + luck*3)]]
+        , [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 3,-2-luck//15, [], 80 + luck**2,
            [quality + ' Zandalari meatcleaver', 'short and weak, but fast costs:' + str(80 + luck**2)]]
         , [-50, 40, [img('icesword.png'), img('iceswordcrpd.png')], 15 + luck // 4,0-luck//20,
-           [[1, 2], 0, 0, 100, slow, ['*line 1', 1.1 + luck / 60, 80 + luck * 2]], 300 + luck*luck*2,
+           [[1, 2], 0, 0, 100, slow, ['*line 1', 1.1 + luck / 60, 80 + luck * 2]], 250 + luck*luck*2,
            [quality + ' Frost-Slicer',
             'freeze amount and duration is relient on quality. can be very powerful against meele foes. costs:' + str(
-                300 + luck*luck*2)]]
+                250 + luck*luck*2)]]
         , [-50, 40, [img('ashenblade.png'), img('ashenbladecrpd.png')], 75 + luck*20, 0 - luck // 20,
             # Speed,attack,pierce,sametarget,IMG
            [[1,2], 0, 0, 100, shoot, [0, 7, 5+luck*1.5*bigmult,100,-1,pygame.transform.smoothscale(lava, (int(500 * bigmult), int(250 * bigmult)))]], (10000 + luck*luck*80)*bigmult,
@@ -387,7 +387,7 @@ class mob(pygame.sprite.Sprite):
         self.H = [H, H]
         self.N = N
         self.EX = 0
-        self.loot = random.choice([(self.H[1]), Loot])
+        self.loot = random.choice([(self.H[1]*3), Loot])
         self.EY = 0
         self.tired = [1, 200]
         self.s = self.I.get_size()
@@ -1638,9 +1638,9 @@ while running:
                         b.H[0]=b.H[1]
         r = requests.post('http://'+ipadress+':5000/Dmgdone', headers=headers, data=jsonpickle.encode([[[e.helfloss,e.A[0],e.ID] for e in mobs],me.ID]))
         heh = jsonpickle.decode(r.text)
-        if heh[1] > PARMR:
+        if heh[1] > max(0,PARMR):
             me.H[0] -= (((heh[1] - PARMR) / (8 + max(PARMR, 0)) / 10)*timeout)
-        if heh[0] > PPARMR:
+        if heh[0] > max(0,PPARMR):
             me.H[0] -= (((heh[0] - PPARMR) / (8 + max(PPARMR, 0)) / 10)*timeout)
         if me.H[0]<0:
             r = requests.post('http://'+ipadress+':5000/playerdeath', headers=headers,
