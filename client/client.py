@@ -1832,9 +1832,9 @@ while running:
     ############           ############           ############           ############
     fps = font.render("FPS: " + str(time.time() - start_time), True, (0, 0, 0))
     screen.blit(fps, (10, 20))
-    fps = font.render("TimeTillDeath: " + str(countdown+9 - int(start_time)), True, (0, 0, 0))
+    fps = font.render("TimeTillDeath: " + str(countdown+240 - int(start_time)), True, (0, 0, 0))
     screen.blit(fps, (10, 50))
-    if (countdown+9 - int(start_time))<1:
+    if (countdown+240 - int(start_time))<1:
         countdown=1000000000000
         r = requests.post('http://'+ipadress+':5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
     if cooldown > 0:
