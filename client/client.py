@@ -666,9 +666,10 @@ def arrowmov():
         e.y = int(e.Y)
 mobspd=0.8
 def playerdown():
-    global me,enearrow,allyarrow,arrows,moving,mobspd,arena
+    global me,enearrow,allyarrow,arrows,moving,mobspd,arena,chosen
     if arena==1:
         winfight(0)
+        chosen=[]
     holo = 1000
     mobspd=0.8
     arrows=[]
