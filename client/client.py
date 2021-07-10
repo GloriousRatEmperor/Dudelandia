@@ -1,25 +1,5 @@
 import requests
 import jsonpickle
-
-
-'''class timer(object):
-    def __init__(self, ID):
-        self.T = "hu ha"
-        self.ID = ID
-
-
-r = requests.get('http://'+ipadress+':5000/game/fanda')
-print(r.text)
-give = []
-give.append(timer(3))
-headers = {'Content-type': 'application/json'}
-for e in give:
-    r = requests.post('http://'+ipadress+':5000/game/fanda', headers=headers, data=jsonpickle.encode(e))
-print(r.text)
-
-r = requests.get('http://'+ipadress+':5000/time')
-(float(r.text))'''
-
 # *this is never used because the function is shared with the mobs, the mobs specify when the thing hits whereas the player has separate conditions. this is a mess btw.
 # import numpy as np
 import random
@@ -52,6 +32,7 @@ def img(imgname):
 
 fontBG = pygame.font.Font('freesansbold.ttf', 50)
 font = pygame.font.Font('freesansbold.ttf', 25)
+funt = pygame.font.Font('freesansbold.ttf', 30)
 fpont = pygame.font.Font('freesansbold.ttf', 20)
 fint = pygame.font.Font('freesansbold.ttf', 150)
 flont = pygame.font.Font('freesansbold.ttf', 80)
@@ -258,7 +239,7 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
            [quality + ' Godslayer',
             'throws lava at enemies hit, immensly expensive. costs:' + str(
                 int((5000 + luck*luck*80)*bigmult))]]
-        , [-50, 40, [gun, gun2], luck // 15,4-luck//10,
+        , [-50, 40, [gun, gun2], luck // 10,4-luck//10,
            [[2], 1, 1, 0, shoot, [0, 25, luck * 0.5+luck**2*0.05, 1, -1, pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]], 50 * luck+luck**2, [quality + ' Gun',
                                                                                   'guns can be utter failiures, or strong, but it will reflect on the price costs:' + str(
                                                                                       50 * luck+luck**2)]]]
@@ -298,29 +279,38 @@ dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscal
          pygame.transform.smoothscale(dopii,(850,850)),pygame.transform.smoothscale(dopii,(1000,1000)),pygame.transform.smoothscale(dopii,(1200,1200)),
          pygame.transform.smoothscale(dopii,(1600,1600)),pygame.transform.smoothscale(dopii,(1900,1900)),pygame.transform.smoothscale(dopii,(3000,3000)),
          pygame.transform.smoothscale(dopii,(5000,5000)),pygame.transform.smoothscale(dopii,(15000,15000))]
-def genmob(mobnumber, position=[700,700]):
+ampla=[4,4 ,1,1, 5,1, 0.2,0.1, 8,2, 4,3]
+ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,]
+def genmob(mobnumber, position=[700,700],power=[1,1]):
+    global ampli,ampla
     weaponsRANDOM(0)
+    if power[1]==1:
+        ample=[e*power[0] for e in ampla]
+    elif power[0]==1:
+        ample = ampli
+    else:
+        ample = [e*power[0] for e in ampli]
     if mobnumber==1:
         MOB=mob(position[0], position[1], [grases[random.randint(0, 4)], grasatac], random.randint(3, 5), 'grass',
-                        [atcup, [[1, 2, 3], 3, 140], shoot, [[4], 2, 10, -1, 3, mosh]], random.randint(1, 170),
-                        [15, 15],140, weapons[0])
+                        [atcup, [[1, 2, 3], 3, 140], shoot, [[4], 2, 10*ample[1], -1, 3, mosh]], random.randint(1, 170)*ample[0],
+                        [15*ample[1], 15*ample[1]],140, weapons[0])
     elif mobnumber == 2:
         MOB=mob(position[0], position[1], [pygame.transform.smoothscale(grases[random.randint(0, 4)],(400,400)), grasatacbig], 5.5, 'grass',
-                        [atcup, [[1, 2, 3], 4, 140], shoot, [[4], 5.6, 30, -1, 3, pygame.transform.smoothscale(mosh,(942,565))]], random.randint(600, 1000),
-                        [15, 15],140, weapons[4])
+                        [atcup, [[1, 2, 3], 4, 140], shoot, [[4], 5.6, 30*ample[3], -1, 3, pygame.transform.smoothscale(mosh,(942,565))]], random.randint(600, 1000)*ample[2],
+                        [15*ample[3], 15*ample[3]],140, weapons[4])
     elif mobnumber == 3:
         MOB=mob(position[0], position[1], [dopusIMG, dopusatc, [60, 0, 239, 287]], random.randint(6, 8), 'dopus',
-                        [atcup, [[3], 180, 120], slow, [[3], 3, 120]], 50, [2, 2],120, weapons[1])
+                        [atcup, [[3], 180, 120], slow, [[3], 3, 120]], 50*ample[4], [2*ample[5], 2*ample[5]],120, weapons[1])
     elif mobnumber == 4:
         MOB=mob(position[0], position[1], [dragon, dragonatc], random.randint(4, 5), 'fire lizard',
-                        [atcup, [[2], 150, 150], shoot, [[3], 20, 200, 60, 2, fireball]], 5000, [30, 30],150, weapons[3])
+                        [atcup, [[2], 150, 150], shoot, [[3], 20, 200*ample[6], 60, 2, fireball]], 5000*ample[6], [30*ample[7], 30*ample[7]],150, weapons[3])
     elif mobnumber == 5:
         MOB=mob(position[0], position[1], [dope, dopeatc], random.randint(7, 10), 'dope',
                         [atcup, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 4, 10000], slow, [[2], 150, 15000],
-                         hpboost, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 3, 10000]], 15, [2, 2],120, weapons[2])
+                         hpboost, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 3, 10000]], 15*ample[8], [2*ample[9], 2*ample[9]],120, weapons[2])
     elif mobnumber == 6:
         MOB=mob(position[0], position[1], [orcIMG, orcatc, [-20, 0, 300, 300]], random.randint(3, 4), 'orc',
-                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250, [30, 30],50, weapons[4])
+                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, weapons[4])
     return MOB
 class moob(pygame.sprite.Sprite):
     def __init__(self,X,Y,I,ID,Enemies,difficulty):
@@ -334,10 +324,7 @@ class moob(pygame.sprite.Sprite):
         self.d = difficulty
     def enter(self):
         for e in range(self.e):
-            mawb=genmob(random.randint(1,6))
-            mawb.H[0]*=self.d / 100
-            mawb.H[1] *=self.d / 100
-            mawb.A[0]*= self.d / 100
+            mawb=genmob(random.randint(1,6), [2000,2000], [self.d/100,0])
             mawb.X=random.randint(-2000,2000)
             mawb.Y = random.randint(-2000, 2000)
             self.enemies.append(mawb)
@@ -459,7 +446,8 @@ class item(pygame.sprite.Sprite):
 
 items = []
 class Armor(pygame.sprite.Sprite):
-    def __init__(self, I, Armor, PArmor, helf, SPE, cost):
+    def __init__(self, I, Armor, PArmor, helf, SPE, cost,name):
+        self.name=name
         self.cost = cost
         self.I = I[0]
         self.Icropped = I[1]
@@ -494,7 +482,8 @@ class Armor(pygame.sprite.Sprite):
         self.saveo = [e for e in self.item]
 
 class Weapon(pygame.sprite.Sprite):
-    def __init__(self, X, Y, I, A,speed, SPE, cost):
+    def __init__(self, X, Y, I, A,speed, SPE, cost,name):
+        self.name=name
         self.cost = cost
         multiplier = 0.5
         multiplier2 = 0.1
@@ -677,7 +666,9 @@ def arrowmov():
         e.y = int(e.Y)
 mobspd=0.8
 def playerdown():
-    global me,enearrow,allyarrow,arrows,moving,mobspd
+    global me,enearrow,allyarrow,arrows,moving,mobspd,arena
+    if arena==1:
+        winfight(0)
     holo = 1000
     mobspd=0.8
     arrows=[]
@@ -846,7 +837,7 @@ def distanceM(eneX, eneY, bulX, bulY, o):
     if distance < o:
         return True
 
-def winfight():
+def winfight(lootit=0):
     global me, arena, Px, Py, loot, money, borderX, borderY, borderXX, borderYY
     arena = 0
     me.Y = PY1
@@ -857,14 +848,15 @@ def winfight():
     borderY = [0, h]
     borderXX = [-20000, 20000]
     borderYY = [-20000, 20000]
-    for e in loot:
-        if isinstance(e, list):
-            if isinstance(e[0], int):
-                ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5], e[6]))
+    if lootit==1:
+        for e in loot:
+            if isinstance(e, list):
+                if isinstance(e[0], int):
+                    ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5], e[6],e[7]))
+                else:
+                    unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5],e[6]))
             else:
-                unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5]))
-        else:
-            money += e
+                money += e
     loot = []
     me.H[0] = me.H[1]
 
@@ -875,9 +867,9 @@ def lootem(ene):
     for e in loot:
         if isinstance(e, list):
             if isinstance(e[0], int):
-                ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5],e[6]))
+                ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5],e[6],e[7]))
             else:
-                unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5]))
+                unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5],e[6]))
         else:
             money += e
     loot = []
@@ -963,7 +955,7 @@ EquipMen = pygame.transform.smoothscale(img('EquipMen.png'), (w, h))
 bl = 0
 holding = 0
 biggafish = img("man.png")
-
+stot=img("weaponstater.png")
 
 def menu():
     global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding,unActivearmor
@@ -1064,7 +1056,27 @@ def menu():
             if g.item[3] < 1:
                 if g.item[0]>w*0.45:
                     screen.blit(g.item[2], ((g.item[0], g.item[1]+allposdown)))
-        screen.blit(EquipMen, ((0, 0)))
+        if holding==0:
+            for g in items:
+                if g.item[3] < 1:
+                    if g.item[0] > w * 0.45:
+                        if distanceC(g.item[0] + g.item[4] // 2, g.item[1] + allposdown + g.item[5] // 2, XX[0],XX[1]) < g.item[4] // 2:
+                            screen.blit(stot, (1100+15, g.item[1]+15 + allposdown))
+                            stats = funt.render(str(g.name[0]), True, (0, 0, 0))
+                            screen.blit(stats, (1100 + 10 + 15, g.item[1] + 15 + allposdown + 50))
+                            blit_text(g.name[1], [1100 + 10 + 15, g.item[1] + 15 + allposdown + 200], font, w * 0.85)
+                            if g in unActivearmor:
+                                stats = font.render('health: ' + str(int(g.H)), True, (0, 0, 0))
+                                screen.blit(stats, (1100+15 +10, g.item[1]+15 + allposdown +125))
+                                stats = font.render('armour: ' + str(int(g.A)), True, (0, 0, 0))
+                                screen.blit(stats, (1100+15 + +10, g.item[1]+15 + allposdown +150))
+                                stats = font.render('spell armour: ' + str(int(g.PA)), True, (0, 0, 0))
+                                screen.blit(stats, (1100+15 + +10, g.item[1]+15 + allposdown +175))
+                            else:
+                                stats = font.render('attack: ' + str(int(g.A)), True, (0, 0, 0))
+                                screen.blit(stats, (1100+10+15, g.item[1]+15 + allposdown +125))
+
+        screen.blit(EquipMen, (0, 0))
         screen.blit(biggafish, (int(w * 0.15), int(h * 0.03)))
         for g in items:
             if g.item[3] < 1:
@@ -1072,6 +1084,7 @@ def menu():
                     screen.blit(g.item[2], ((g.item[0], g.item[1])))
             else:
                 screen.blit(g.item[2], ((XX[0] - g.item[4] // 2, XX[1] - g.item[5] // 2)))
+
         draw00(0)
         stats = font.render('attack: ' + str(int(PATC[1])) + ',' + str(int(PATC[0])), True, (0, 0, 0))
         screen.blit(stats, ((15, 800)))
@@ -1084,12 +1097,13 @@ def menu():
         stats = fpont.render('spell armour: ' +str(int(PPARMR)), True, (0, 0, 0))
         screen.blit(stats, ((15, 895)))
         pygame.display.update()
+
 def getarmor(theitem):
     theitem = theitem[0]
-    unActivearmor.append(Armor(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4],theitem[5]))
+    unActivearmor.append(Armor(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4],theitem[5],theitem[6]))
 def getweapon(theitem):
     theitem = theitem[0]
-    ActiveWeapon.append(Weapon(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4], theitem[5],theitem[6]))
+    ActiveWeapon.append(Weapon(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4], theitem[5],theitem[6],theitem[7]))
 
 book = img('book.png')
 beefbook = img('sandwich.png')
@@ -1130,7 +1144,6 @@ def mobbin(mooob):
             for e in mooob.enemies:
                 mobs.append(e)
             loot.append(mooob.d*5)
-            print(mooob.d*5)
             fight(mooob.enemies)
             r = requests.post('http://' + ipadress + ':5000/MoobUpdate', headers=headers,
                               data=jsonpickle.encode([mooob.ID, me.ID]))
@@ -1367,7 +1380,7 @@ def SANDWICH(nomatter):
     # X, Y, I, A,speed, SPE, cost
     #[0, 25, luck * 0.5 + luck ** 2 * 0.05, 1, -1,
      #pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]]
-    ActiveWeapon.append(Weapon(-50, 40, [sandw,beefbook], 1, 0, [[2], 1, 1, 0, heal, [100,1]], 500))
+    ActiveWeapon.append(Weapon(-50, 40, [sandw,beefbook], 1, 0, [[2], 1, 1, 0, heal, [100,1]], 500,"Sandwich"))
 def atcP(multipliar):
     # multipliar(amount,way),timee,hand,first
     global PATC
@@ -1570,14 +1583,14 @@ def enewin():
         pygame.display.update()
 timeout=0
 helth=0
-#for e in range(200):
-     #lootem(genmob(random.randint(1,6)))
+for e in range(200):
+    lootem(genmob(random.randint(1,6)))
 # weaponsRANDOM(0)
 # for e in range(100):
 #     getarmor([armors[random.randint(0,len(armors)-1)]])
 #weaponsRANDOM(30)
-#for e in range(10):
-    #getarmor([armors[ random.randint(0,len(armors)-1) ]])
+for e in range(10):
+    getarmor([armors[ random.randint(0,len(armors)-1) ]])
 def Murderkill(lols):
     global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, PXSPD, PYSPD,arena,mobs
     PXSPD =0
