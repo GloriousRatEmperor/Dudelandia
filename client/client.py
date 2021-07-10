@@ -281,7 +281,7 @@ dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscal
          pygame.transform.smoothscale(dopii,(5000,5000)),pygame.transform.smoothscale(dopii,(15000,15000))]
 ampla=[4,4 ,1,1, 5,1, 0.2,0.1, 8,2, 4,3]
 ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,]
-def genmob(mobnumber, position=[700,700],power=[1,1]):
+def genmob(mobnumber, position=[700,700],power=[1,0]):
     global ampli,ampla
     weaponsRANDOM(0)
     if power[1]==1:
