@@ -1583,14 +1583,14 @@ def enewin():
         pygame.display.update()
 timeout=0
 helth=0
-for e in range(200):
-    lootem(genmob(random.randint(1,6)))
+#for e in range(200):
+    #lootem(genmob(random.randint(1,6)))
 # weaponsRANDOM(0)
 # for e in range(100):
 #     getarmor([armors[random.randint(0,len(armors)-1)]])
 #weaponsRANDOM(30)
-for e in range(10):
-    getarmor([armors[ random.randint(0,len(armors)-1) ]])
+#for e in range(10):
+    #getarmor([armors[ random.randint(0,len(armors)-1) ]])
 def Murderkill(lols):
     global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, PXSPD, PYSPD,arena,mobs
     PXSPD =0
