@@ -79,7 +79,7 @@ PSPECIALO = []
 PATC = [1, 1]
 Patcsped = [10, 10]
 PRange = [30, 30]
-PSPE = 30
+PSPE = 11
 PEQ = []
 gold = 0
 ############                          ############
