@@ -3,6 +3,7 @@ import jsonpickle
 import time
 import random
 import pygame
+import math
 countdown=-1
 class tile(pygame.sprite.Sprite):
     def __init__(self, X, Y, I):
@@ -13,15 +14,21 @@ class tile(pygame.sprite.Sprite):
 playersID=0
 moobs=[]
 moobID=0
+def distanceC(eneX, eneY, bulX, bulY):
+    distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
+    return distance
 class moob(object):
     def __init__(self):
         global moobID
         moobID+=1
         self.ID=moobID
-        self.X=-20000 + 200 * random.randint(1, 199)
-        self.Y=-20000 + 200 * random.randint(1, 199)
-        self.enemies = random.randint(3,9)
-        self.difficulty=int((20000+self.X+self.Y)/5)
+        self.X=-20000 + 200 * random.randint(0, 200)
+        self.Y=-20000 + 200 * random.randint(0, 200)
+        self.difficulty=int((distanceC(self.X,self.Y,0,0))//500)
+        self.difficulty=self.difficulty*self.difficulty/50
+        if self.difficulty<0.5:
+            self.difficulty=0.5
+        self.enemies = min(10,max(int(self.difficulty*0.3),2))
 class player(object):
     def __init__(self):
         global playersID
@@ -138,17 +145,17 @@ def MoobUpdate():
 
 @app.route('/PlayerUpdate', methods = ['POST'])
 def PlayerUpdate():
-    global players
+    global players,updattes
     update = jsonpickle.decode(request.get_data())
     for e in players:
         if e.ID==update.ID:
             e.X=-update.X
             e.Y=-update.Y
             e.H=update.H
-            updates=e.updates
+            updattes=e.updates
             e.updates=[]
             break
-    return jsonpickle.encode([players,updates])
+    return jsonpickle.encode([players,updattes])
 
 @app.route('/MyUpdates', methods = ['POST'])
 def giveupdate():
