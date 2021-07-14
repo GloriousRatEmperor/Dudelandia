@@ -227,7 +227,7 @@ def METEOR(none,power,nothing):
         images.append(Image(XX[0]-me.X,XX[1]-me.Y,target,ti+80))
         for e in images:
             if e.I[0]==target:
-                arrows.append(arrow(e.X, e.Y-900, 0, 50, 0, -666, 10, 1, pygame.transform.smoothscale(meteo, (int(213*power[1]), int(450*power[1])))))
+                arrows.append(arrow(e.X, e.Y-900, 0, 50, 0, -666, 10, 1, pygame.transform.smoothscale(meteo, (int(213*min(power[1],8)), int(450*min(power[1],8))))))
     else:
         #def __init__(self, X, Y, speedx, speedy, dmg, pierce, sametarget, friendly, I):
         METEORFAZE -=1
@@ -251,7 +251,7 @@ def METEOR(none,power,nothing):
                         trues = b.trueS
                     if distanceM(e.X, e.Y, b.X + b.trueX + trues[0] // 2, b.Y + b.trueY + trues[1] // 2,
                                  (trues[1] + trues[0] + b.s[0] + b.s[1]) / 4+100):
-                        b.H[0] -= power[0]-distanceC(e.X, e.Y, b.X + b.trueX + trues[0] // 2, b.Y + b.trueY + trues[1] // 2)
+                        b.H[0] -= max(power[0]-distanceC(e.X, e.Y, b.X + b.trueX + trues[0] // 2, b.Y + b.trueY + trues[1] // 2),power[0]//3)
                         if b.H[0] < 0:
                             gar = [c for c in timedstuffs]
                             for a in gar:
@@ -324,11 +324,11 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
            [[2], 1, 1, 0, shoot, [0, 25, luck * 0.5+luck**2*0.05 * bigmult, 1, -1, pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]],int(50 * luck+luck**2*bigmult), [big+quality + ' Gun',
                                                                                   'guns can be utter failiures, or strong, but it will reflect on the price costs:' + str(
                                                                                       int(50 * luck+luck**2*bigmult))]]
-        , [-50, 40, [staffm, staffm2], luck // 10, 4,
-           [[1,2], 1, 1, 0, METEOR, [300 + luck ** 2 * 0.05*bigmult**2,bigmult**2]],
-           int(50 * luck + luck ** 2*(bigmult**2)), [big+quality + ' Meteor staff',
+        , [-50, 40, [staffm, staffm2], luck // 5, 4,
+           [[1,2], 1, 1, 0, METEOR, [(300 + luck ** 2 * 0.05)*bigmult**2,bigmult**2]],
+           int((3000+125 * luck + 4*luck ** 2)*(bigmult**3)), [big+quality + ' Meteor staff',
                                    'The Meteor staff will call down a meteor after a delay, it requires precision to maximize damage, costs:' + str(
-                                       int(50 * luck + luck ** 2*(bigmult**2)))]]]
+                                       int((3000+125 * luck + 4*luck ** 2)*(bigmult**3)))]]]
 
           #I, Armor, PArmor, helf, SPE, cost
 
@@ -1229,7 +1229,7 @@ def mobbin(mooob):
         screen.fill((0, 0, 0))
         screen.blit(moobIMG, ((0, 0)))
         draw00(0)
-        stats = flint.render('Money: ' + str(int(mooob.d*80+mooob.d**mooob.d*0.6)), True, (0, 200, 0))
+        stats = flint.render('Money: ' + str(int(mooob.d*80+mooob.d*mooob.d)), True, (0, 200, 0))
         screen.blit(stats, (1400, 750))
         stats = flint.render('difficulty: ' + str(int(mooob.d*10)), True, (0, 200, 0))
         screen.blit(stats, (1400, 800))
@@ -1237,7 +1237,7 @@ def mobbin(mooob):
             mooob.enter()
             for e in mooob.enemies:
                 mobs.append(e)
-            loot.append(mooob.d*80+mooob.d**mooob.d*0.6)
+            loot.append(mooob.d*80+mooob.d*mooob.d*6)
             fight(mooob.enemies)
             r = requests.post('http://' + ipadress + ':5000/MoobUpdate', headers=headers,
                               data=jsonpickle.encode([mooob.ID, me.ID]))
