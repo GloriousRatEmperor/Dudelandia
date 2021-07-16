@@ -51,6 +51,7 @@ class shop(object):
         self.ID=shopID
         self.X=-20000 + 200 * random.randint(1, 199)
         self.Y=-20000 + 200 * random.randint(1, 199)
+        self.type=random.randint(0,1)
 
 for e in range(1000):
     shops.append(shop())

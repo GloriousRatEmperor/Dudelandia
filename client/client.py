@@ -166,8 +166,30 @@ def slow(e, multiplier, nothin):
     e.S[0] /= multiplier[1]
     timedstuffs.append(timer(spdup, ti + multiplier[2], [e, multiplier[1]], e.ID))
     timedstuffs.sort(key=bythetime)
-mobspd=0.8
+def notbeserk(t,multi):
+    global PATC
+    PATC[0]/=multi[0]
+    PATC[1] /= multi[0]
+    timedstuffs.remove(t)
+    t.kill
+    del t
+def berserk(howmuch):
+    global PATC
+    cancel=0
+    for e in timedstuffs:
+        if e.f == notbeserk:
+            cancel += 1
+    if cancel < 1:
+        PATC[0]*=howmuch[0]
+        PATC[1] *= howmuch[0]
+        PATC[0]*=howmuch[0]
+        PATC[1] *= howmuch[0]
+        Patcsped[0]*=howmuch[0]/2
+        Patcsped[0]*=howmuch[0] / 2
+        timedstuffs.append(timer(notbeserk, ti + howmuch[1], [3], 1))
+        timedstuffs.sort(key=bythetime)
 
+mobspd=0.8
 def spdup(t, multiplier):
     multiplier[0].EX *= multiplier[1]
     multiplier[0].EY *= multiplier[1]
@@ -365,7 +387,7 @@ dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscal
          pygame.transform.smoothscale(dopii,(850,850)),pygame.transform.smoothscale(dopii,(1000,1000)),pygame.transform.smoothscale(dopii,(1200,1200)),
          pygame.transform.smoothscale(dopii,(1600,1600)),pygame.transform.smoothscale(dopii,(1900,1900)),pygame.transform.smoothscale(dopii,(3000,3000)),
          pygame.transform.smoothscale(dopii,(5000,5000)),pygame.transform.smoothscale(dopii,(15000,15000))]
-ampla=[7,3 ,2,0.5, 12,1, 0.2,0.05, 2,1, 2,1]
+ampla=[7,2 ,2,0.5, 12,1, 0.2,0.05, 2,1, 2,1]
 ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,]
 def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
     global ampli,ampla
@@ -422,10 +444,11 @@ class moob(pygame.sprite.Sprite):
 ranged=[]
 
 class shop(object):
-    def __init__(self,ID,X,Y):
+    def __init__(self,ID,X,Y,type):
         self.ID =ID
         self.X=X
         self.Y=Y
+        self.type=type
 
 class arrow(pygame.sprite.Sprite):
     def __init__(self, X, Y, speedx, speedy, dmg, pierce, sametarget, friendly, I):
@@ -518,11 +541,12 @@ class button(pygame.sprite.Sprite):
 
 
 class tile(pygame.sprite.Sprite):
-    def __init__(self, X, Y, I,ID=-1):
+    def __init__(self, X, Y, I,ID=-1,type=1):
         self.ID=ID
         self.X = X
         self.Y = Y
         self.I = I
+        self.type = type
         self.s = self.I.get_size()
 
 
@@ -622,7 +646,7 @@ playerIMGcrpd = img('mancropped.png')
 PlayerSizecrpd = playerIMGcrpd.get_size()
 ti = 0
 speech = pygame.transform.smoothscale(img('speech.png'), (int(w * .4), int(h * .3)))
-shoptile = img('shop.png')
+shoptile = [img('shop.png'),img('potionshop.png')]
 
 
 def draw00(showp):
@@ -660,7 +684,7 @@ def shopreplace(Replacement):
         if e.ID==Replacement[0]:
             shops.remove(e)
             break
-    shops.append(tile(Replacement[1].X, Replacement[1].Y, shoptile, Replacement[1].ID))
+    shops.append(tile(Replacement[1].X, Replacement[1].Y, shoptile[Replacement[1].type], Replacement[1].ID, Replacement[1].type))
 def draw2():
     global PXSPD, PYSPD, h, w,moving
     for e in tiles:
@@ -687,11 +711,11 @@ def draw2():
                 PYSPD = 0
                 moving = 0
                 r = requests.post('http://'+ipadress+':5000/ShopUpdate', headers=headers, data=jsonpickle.encode([e.ID,me.ID]))
-                shoops = jsonpickle.decode(r.text)
-                shops.append(tile(shoops.X, shoops.Y, shoptile, shoops.ID))
+                Replacement = jsonpickle.decode(r.text)
+                shops.append(tile(Replacement.X, Replacement.Y, shoptile[Replacement.type], Replacement.ID, Replacement.type))
                 shops.remove(e)
                 e.kill
-                shoppin()
+                shoppin(e.type)
     for e in moobs:
         screen.blit(e.I, (e.X + me.X, e.Y + me.Y))
         if w // 2 + e.s[0] > e.X + me.X + e.s[0] > w // 2:
@@ -912,7 +936,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 0
+money = 100000
 loot = []
 
 def distanceC(eneX, eneY, bulX, bulY):
@@ -1021,8 +1045,13 @@ def equippedweapon(weapon, hand):
     Patcsped[hand*-1+1] += weapon.speed
     weapon.item[3] = -1
     if not weapon.SPE == []:
-        weapon.SPE[2] = hand
-        PSPECIAL.append(weapon.SPE)
+        if len(weapon.SPE)>3:
+            weapon.SPE[2] = hand
+            PSPECIAL.append(weapon.SPE)
+        else:
+            for e in weapon.SPE:
+                e[2] = hand
+                PSPECIAL.append(e)
     if hand == 0:
         weapon.hand = 2
         weapon.I = pygame.transform.flip(weapon.i, True, False)
@@ -1194,7 +1223,13 @@ def getarmor(theitem):
 def getweapon(theitem):
     theitem = theitem[0]
     ActiveWeapon.append(Weapon(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4], theitem[5],theitem[6],theitem[7]))
-
+def getpotion(theitem):
+    pott=0
+    for e in items:
+        if e.name==theitem[0][7]:
+            pott+=1
+    if pott<20:
+        getweapon(theitem)
 book = img('book.png')
 beefbook = img('sandwich.png')
 moobIMG=pygame.transform.smoothscale(img('moobIMG.png'), (w, h))
@@ -1251,25 +1286,39 @@ def mobbin(mooob):
 
         pygame.display.update()
 atccancel=0
-def shoppin():
+potion=img('potion.png')
+potionr=img('potionr.png')
+def shoppin(type):
     global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons
     breakme = 0
-    bok=random.randint(0,100)
-    if bok==100:
-        buttons.append(button(int(w * .78), int(h * 0.78), beefbook, SANDWICH,
-                              [500, [1, 0, 0, 2, 0], ['Shopkeeper\'s sandwich', 'my sandwich? fine it is yours for 500 gold']]))
-    else:
-        buttons.append(button(int(w * .78), int(h * 0.78), book, atcP,
-                              [10, [1, 0, 0, 2, 0], ['Book of war', '+1 atttack!, how amazing']]))
-    for e in range(3):
+    #x,y,img,the getfunction,[price,arguments,text]
+    if type==0:
+        bok=random.randint(0,100)
+        if bok==100:
+            buttons.append(button(int(w * .78), int(h * 0.78), beefbook, SANDWICH,
+                                  [500, [1, 0, 0, 2, 0], ['Shopkeeper\'s sandwich', 'my sandwich? fine it is yours for 500 gold']]))
+        else:
+            buttons.append(button(int(w * .78), int(h * 0.78), book, atcP,
+                                  [10, [1, 0, 0, 2, 0], ['Book of war', '+1 atttack!, how amazing']]))
+        for e in range(3):
+            weaponsRANDOM(0)
+            purchase = weapons[random.randint(0, len(weapons) - 1)]
+            buttons.append(button(int(w * 0.15 * e + w * 0.3), int(h * 0.78), purchase[2][1], getweapon,
+                                  [purchase[6], [purchase], purchase[7]]))
         weaponsRANDOM(0)
-        purchase = weapons[random.randint(0, len(weapons) - 1)]
-        buttons.append(button(int(w * 0.15 * e + w * 0.3), int(h * 0.78), purchase[2][1], getweapon,
-                              [purchase[6], [purchase], purchase[7]]))
-    weaponsRANDOM(0)
-    purchase = armors[random.randint(0, len(armors) - 1)]
-    buttons.append(button(int(w * 0.37), int(h * 0.258), purchase[0][1], getarmor,
-                          [purchase[5], [purchase], purchase[6]]))
+        purchase = armors[random.randint(0, len(armors) - 1)]
+        buttons.append(button(int(w * 0.37), int(h * 0.258), purchase[0][1], getarmor,
+                              [purchase[5], [purchase], purchase[6]]))
+    else:
+        for e in range(20):
+            buttons.append(button(int(w * 0.15 * e + w * 0.02), int(h * 0.78), potion, getpotion,
+                                  [20, [[-50, 40, [potion, potion], 0, 0, [], 500
+                                      , ['Health potion', 'a health potion that gives 250 instant hp, press w to activate']]]
+                                      , ["HEALTH POTION","a healing potion that gives 250 instant hp, press w to activate. max 20, costs:20"]]))
+            buttons.append(button(int(w * 0.2 * e + w * 0.02), int(h * 0.78), potionr, getweapon,
+                                  [200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
+                                      , ['Berserker potion', 'a potion that gives 5times basic attack damage for 10s, press e to activate.']]]
+                                      , ['BERSERKER POTION', 'a potion that gives 5times basic attack damage for 10s, press e to activate. cannot stack, costs:200']]))
     while True:
         XX = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -1293,14 +1342,14 @@ def shoppin():
             buttons = []
             break
         screen.fill((0, 0, 0))
-        screen.blit(shopIMG, ((0, 0)))
+        screen.blit(shopIMG[type], ((0, 0)))
         stats = font.render('Money: ' + str(money), True, (220, 170, 0))
         screen.blit(stats, ((15, 1005)))
         draw00(1)
         pygame.display.update()
 
 
-shopIMG = pygame.transform.smoothscale(img('shopkeeper.png'), (w, h))
+shopIMG = [pygame.transform.smoothscale(img('shopkeeper.png'), (w, h)),pygame.transform.smoothscale(img('potionshop.png'), (w, h))]
 def fight(ene):
     global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, mobs, PSPE, PXSPD, PYSPD
     for e in ene:
@@ -1396,7 +1445,7 @@ r = requests.get('http://'+ipadress+':5000/shoppos')
 shoops = jsonpickle.decode(r.text)
 shops=[]
 for e in shoops:
-    shops.append(tile(e.X,e.Y,shoptile,e.ID))
+    shops.append(tile(e.X, e.Y, shoptile[e.type], e.ID, e.type))
 
 r = requests.get('http://'+ipadress+':5000/mobbos')
 mooobs = jsonpickle.decode(r.text)
@@ -1809,9 +1858,22 @@ while running:
                 apressed = 0
             if event.key == pygame.K_d:
                 dpressed = 0
-            # if event.key == pygame.K_w:
-            #   if PYSPD <0:
-        #         PYSPD = 0
+            if event.key == pygame.K_w:
+                for e in ActiveWeapon:
+                    if e.name[0]=='Health potion':
+                        heal(0,[250,0],0)
+                        items.remove(e)
+                        ActiveWeapon.remove(e)
+                        e.kill
+                        break
+            if event.key == pygame.K_e:
+                for e in ActiveWeapon:
+                    if e.name[0]=='Berserker potion':
+                        berserk([5,150])
+                        items.remove(e)
+                        ActiveWeapon.remove(e)
+                        e.kill
+                        break
         #  if event.key == pygame.K_s:
         #    if PYSPD >0:
         #       PYSPD = 0
