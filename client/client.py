@@ -144,11 +144,12 @@ def shoot(e, arow, shouldIshoot):
         ally = 1
     else:
         ally = 0
-
+    if len(arow)<7:
+        arow.append([])
     if ally == 0:
-        arrows.append(arrow(e.x + e.s[0] // 2, e.y + e.s[1] // 2, spdx, spdy, arow[2], arow[3], arow[4], 0, final))
+        arrows.append(arrow(e.x + e.s[0] // 2, e.y + e.s[1] // 2, spdx, spdy, arow[2], arow[3], arow[4], 0, final,arow[6]))
     else:
-        arrows.append(arrow(w // 2 - Px, h // 2 - Py, -spdx, -spdy, arow[2], arow[3], -arow[4] + 1, 1, final))
+        arrows.append(arrow(w // 2 - Px, h // 2 - Py, -spdx, -spdy, arow[2], arow[3], -arow[4] + 1, 1, final,arow[6]))
 
 def atcdown(t, multiplier):
     multiplier[0].A[0] /= multiplier[1]
@@ -166,28 +167,38 @@ def slow(e, multiplier, nothin):
     e.S[0] /= multiplier[1]
     timedstuffs.append(timer(spdup, ti + multiplier[2], [e, multiplier[1]], e.ID))
     timedstuffs.sort(key=bythetime)
+def tree():
+    pass
 def notbeserk(t,multi):
-    global PATC
-    PATC[0]/=multi[0]
-    PATC[1] /= multi[0]
+    global PATC,Patcsped
+    PATC[0]/=multi
+    PATC[1] /= multi
+    Patcsped[1] *= multi / 2.5
+    Patcsped[0] *= multi / 2.5
     timedstuffs.remove(t)
     t.kill
     del t
 def berserk(howmuch):
-    global PATC
-    cancel=0
-    for e in timedstuffs:
-        if e.f == notbeserk:
-            cancel += 1
-    if cancel < 1:
-        PATC[0]*=howmuch[0]
-        PATC[1] *= howmuch[0]
-        PATC[0]*=howmuch[0]
-        PATC[1] *= howmuch[0]
-        Patcsped[0]*=howmuch[0]/2
-        Patcsped[0]*=howmuch[0] / 2
-        timedstuffs.append(timer(notbeserk, ti + howmuch[1], [3], 1))
-        timedstuffs.sort(key=bythetime)
+    global PATC,Patcsped
+    for e in ActiveWeapon:
+        if e.name[0] == 'Berserker potion':
+            cancel=0
+            for b in timedstuffs:
+                if b.f == notbeserk:
+                    cancel += 1
+                    b.T=ti+howmuch[1]
+                    break
+            if cancel < 1:
+                PATC[0]*=howmuch[0]
+                PATC[1] *= howmuch[0]
+                Patcsped[1]/=howmuch[0]/2.5
+                Patcsped[0]/=howmuch[0]/2.5
+                timedstuffs.append(timer(notbeserk, ti + howmuch[1], howmuch[0], 1))
+                timedstuffs.sort(key=bythetime)
+                items.remove(e)
+                ActiveWeapon.remove(e)
+                e.kill
+            break
 
 mobspd=0.8
 def spdup(t, multiplier):
@@ -378,6 +389,11 @@ orcIMG=img('orc.png')
 orcatc=[img('orcatc.png'),img('orc.png')]
 fireball=img('fireball.png')
 dopii=img('dope.png')
+demonbolt=pygame.transform.smoothscale(img('demonbolt.png'),(350,170))
+sieger=img('sieger.png')
+cata=img('catapult.png')
+cataatc=[img('catapult.png'),img('catapult3.png'),img('catapult4.png')]
+siege=[sieger,sieger,sieger,sieger,sieger,sieger,sieger]
 grasatacbig = [pygame.transform.smoothscale(img('grasatc1.png'),(400,400)), pygame.transform.smoothscale(img('grasatc2.png'),(400,400)), pygame.transform.smoothscale(img('grasatc2.png'),(400,400))]
 grasatac = [img('grasatc1.png'), img('grasatc2.png'), img('grasatc2.png')]
 dope=pygame.transform.smoothscale(dopii,(50,50))
@@ -387,8 +403,8 @@ dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscal
          pygame.transform.smoothscale(dopii,(850,850)),pygame.transform.smoothscale(dopii,(1000,1000)),pygame.transform.smoothscale(dopii,(1200,1200)),
          pygame.transform.smoothscale(dopii,(1600,1600)),pygame.transform.smoothscale(dopii,(1900,1900)),pygame.transform.smoothscale(dopii,(3000,3000)),
          pygame.transform.smoothscale(dopii,(5000,5000)),pygame.transform.smoothscale(dopii,(15000,15000))]
-ampla=[7,2 ,2,0.5, 12,1, 0.2,0.05, 2,1, 2,1]
-ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,]
+ampla=[2,2 ,0.5,0.5, 2,2, 0.05,0.08, 8,1, 1,1, 0.025,0.01]
+ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
     global ampli,ampla
     weaponsRANDOM(itemgood)
@@ -403,23 +419,39 @@ def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
                         [atcup, [[1, 2, 3], 3, 140], shoot, [[4], 2, 10*ample[1], -1, 3, mosh]], random.randint(1, 170)*ample[0],
                         [15*ample[1], 15*ample[1]],140, weapons[0])
     elif mobnumber == 2:
-        MOB=mob(position[0], position[1], [pygame.transform.smoothscale(grases[random.randint(0, 4)],(400,400)), grasatacbig], 5.2, 'grass',
+        MOB=mob(position[0], position[1], [pygame.transform.smoothscale(grases[random.randint(0, 4)],(400,400)), grasatacbig], 5.2, 'BIG grass',
                         [atcup, [[1, 2, 3], 4, 140], shoot, [[4], 5.6, 30*ample[3], -1, 3, pygame.transform.smoothscale(mosh,(942,565))]], random.randint(600, 1000)*ample[2],
-                        [15*ample[3], 15*ample[3]],140, weapons[4])
+                        [15*ample[3], 15*ample[3]],140, weapons[4],0,0,300)
     elif mobnumber == 3:
         MOB=mob(position[0], position[1], [dopusIMG, dopusatc, [60, 0, 239, 287]], random.randint(6, 8), 'dopus',
                         [atcup, [[3], 180, 120], slow, [[3], 3, 120]], 50*ample[4], [2*ample[5], 2*ample[5]],120, weapons[1])
     elif mobnumber == 4:
         MOB=mob(position[0], position[1], [dragon, dragonatc], random.randint(4, 5), 'fire lizard',
-                        [atcup, [[2], 150, 150], shoot, [[3], 20, 200*ample[6], 60, 2, fireball]], 5000*ample[6], [30*ample[7], 30*ample[7]],150, weapons[3])
+                        [atcup, [[2], 150, 150], shoot, [[3], 20, 200*ample[6], 60, 2, fireball]], 5000*ample[6], [30*ample[7], 30*ample[7]],150, weapons[3],0,0,1500)
     elif mobnumber == 5:
         MOB=mob(position[0], position[1], [dope, dopeatc], random.randint(7, 10), 'dope',
                         [atcup, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 4, 10000], slow, [[2], 150, 15000],
-                         hpboost, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 3, 10000]], 15*ample[8], [2*ample[9], 2*ample[9]],120, weapons[2])
+                         hpboost, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 3, 10000]], 15*ample[8], [2*ample[9], 2*ample[9]],120, weapons[0])
     elif mobnumber == 6:
         MOB=mob(position[0], position[1], [orcIMG, orcatc, [-20, 0, 300, 300]], random.randint(3, 4), 'orc',
-                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, weapons[5])
+                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, weapons[0])
+    elif mobnumber == 7:
+        MOB=mob(position[0], position[1], [sieger, siege], 2.5, 'Blackrock cannon',
+                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 2500*ample[10], [30*ample[12], 30*ample[13]],50, weapons[5],0,0,2500)
+    elif mobnumber == 8:
+        MOB=mob(position[0], position[1], [cata, cataatc], 2.5, 'Blackrock cannon',
+                        [shoot, [[4], 20, 10*ample[13], 1, 2, demonbolt,[[summondemon,[300,20]]]]], 2500*ample[10], [30*ample[12], 30*ample[13]],220, weapons[5],0,0,2500)
     return MOB
+minion=img('minion.png')
+minionattack=[img('minionatc.png'),img('minion.png')]
+def summondemon(target,stats):
+    global chosen, mobs
+    MUB = mob(target.X,target.Y, [minion, minionattack], 5, 'Lesser demonspawn',
+              [], [stats[0]-1,stats[0]],
+              [stats[1],stats[1]], 2, 0)
+    mobs.append(MUB)
+    if arena==1:
+        chosen.append(MUB)
 class moob(pygame.sprite.Sprite):
     def __init__(self,X,Y,I,ID,Enemies,difficulty):
         self.ID=ID
@@ -434,11 +466,11 @@ class moob(pygame.sprite.Sprite):
         for e in range(self.e):
             #raritymini=max(1,int(self.d//5))
             if self.d>5:
-                mawb = genmob(random.randint(1, 6), [random.randint(-2000,2000), random.randint(-2000,2000)], [2.5, 1])
+                mawb = genmob(random.randint(1, 7), [random.randint(-2000,2000), random.randint(-2000,2000)], [2.5, 1])
                 mawb.H[0]*=self.d/5+self.d/20*self.d+1
                 mawb.H[1] *=self.d/5+self.d/20*self.d+1
             else:
-                mawb = genmob(random.randint(1, 6), [random.randint(-2000,2000), random.randint(-2000,2000)], [max(self.d / 2, 0.5), 1])
+                mawb = genmob(random.randint(1, 7), [random.randint(-2000,2000), random.randint(-2000,2000)], [self.d / 4, 1])
 
             self.enemies.append(mawb)
 ranged=[]
@@ -451,12 +483,13 @@ class shop(object):
         self.type=type
 
 class arrow(pygame.sprite.Sprite):
-    def __init__(self, X, Y, speedx, speedy, dmg, pierce, sametarget, friendly, I):
+    def __init__(self, X, Y, speedx, speedy, dmg, pierce, sametarget, friendly, I, spe=[]):
         super(arrow, self).__init__()
         if friendly == 0:
             enearrow.append(self)
         else:
             allyarrow.append(self)
+        self.SPE=spe
         self.X = X
         self.Y = Y
         self.I = I
@@ -484,11 +517,12 @@ class timer(pygame.sprite.Sprite):
         self.f(self, self.power)
 
 class mob(pygame.sprite.Sprite):
-    def __init__(self, X, Y, I, S, N, SPE, H, A,atcspd, Loot, id=0, nevaatc=0):
+    def __init__(self, X, Y, I, S, N, SPE, H, A,atcspd, Loot, id=0, nevaatc=0,range=0):
         super(mob, self).__init__()
         self.fliped=1
         self.atcspd = atcspd
         self.X = X
+        self.range=range
         self.attacking = nevaatc
         self.Y = Y
         self.x = X
@@ -503,7 +537,10 @@ class mob(pygame.sprite.Sprite):
         else:
             self.ID = id
         self.SPE = SPE
-        self.H = [H, H]
+        if isinstance(H, list):
+            self.H = H
+        else:
+            self.H = [H, H]
         self.N = N
         self.EX = 0
         self.loot = random.choice([(self.H[1]*3), Loot])
@@ -832,6 +869,8 @@ def arrowkill():
         if e.ST[0] < 1:
             if e.X + Px - e.s[0] // 2 < w // 2 < e.X + Px + e.s[0] // 2:
                 if e.Y + Py - e.s[1] // 2 < h // 2 < e.Y + Py + e.s[1] // 2:
+                    for b in e.SPE:
+                        b[0](e,b[1])
                     if e.dmg>PPARMR:
                         me.H[0] -= (e.dmg-PPARMR)/(8+max(PPARMR,0)/10)*8
                         if me.H[0]<0:
@@ -889,9 +928,9 @@ def mobmov():
     for e in mobs:
         if (not e.H[0] == e.H[1]) or e in chosen:
             rota = distanceC(e.X + Px + e.s[0] // 2, e.Y + e.s[1] // 2 + Py, w // 2, h // 2)
-            if rota < 1500 or arena==1:
+            if rota < 2500 or arena==1:
                 if e.attacking == 0:
-                    if rota < e.s[0] // 4+e.s[1] // 4:
+                    if rota < e.s[0] // 4+e.s[1] // 4+e.range:
                         e.attacking = 1
                         timedstuffs.append(timer(MobAttack, ti + 10, [e, 1], e.ID))
                         timedstuffs.sort(key=bythetime)
@@ -936,7 +975,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 100000
+money = 0
 loot = []
 
 def distanceC(eneX, eneY, bulX, bulY):
@@ -1272,7 +1311,7 @@ def mobbin(mooob):
             mooob.enter()
             for e in mooob.enemies:
                 mobs.append(e)
-            loot.append(mooob.d*80+mooob.d*mooob.d*6)
+            loot.append(mooob.d*80+mooob.d*mooob.d*15)
             fight(mooob.enemies)
             r = requests.post('http://' + ipadress + ':5000/MoobUpdate', headers=headers,
                               data=jsonpickle.encode([mooob.ID, me.ID]))
@@ -1317,8 +1356,12 @@ def shoppin(type):
                                       , ["HEALTH POTION","a healing potion that gives 250 instant hp, press w to activate. max 20, costs:20"]]))
             buttons.append(button(int(w * 0.2 * e + w * 0.02), int(h * 0.78), potionr, getweapon,
                                   [200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
-                                      , ['Berserker potion', 'a potion that gives 5times basic attack damage for 10s, press e to activate.']]]
-                                      , ['BERSERKER POTION', 'a potion that gives 5times basic attack damage for 10s, press e to activate. cannot stack, costs:200']]))
+                                      , ['Berserker potion', 'a potion that gives 5 times basic attack damage and 2times attack speed, press e to activate.']]]
+                                      , ['BERSERKER POTION', 'a potion that gives 5 times basic attack damage and 2times attack speed, press e to activate. cannot stack, costs:200']]))
+            buttons.append(button(int(w * 0.2 * e + w * 0.02), int(h * 0.78), potionr, getweapon,
+                                  [200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
+                                      , ['T potion', 'a potion that reacts with the earth, press t to activate.']]]
+                                      , ['T POTION', 'a potion that reacts with the earth, costs:500']]))
     while True:
         XX = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -1736,7 +1779,7 @@ def enewin():
 timeout=0
 helth=0
 #for e in range(200):
-    #lootem(genmob(random.randint(1,6)))
+    #lootem(genmob(random.randint(1,7)))
 # weaponsRANDOM(0)
 # for e in range(100):
 #     getarmor([armors[random.randint(0,len(armors)-1)]])
@@ -1867,13 +1910,9 @@ while running:
                         e.kill
                         break
             if event.key == pygame.K_e:
-                for e in ActiveWeapon:
-                    if e.name[0]=='Berserker potion':
-                        berserk([5,150])
-                        items.remove(e)
-                        ActiveWeapon.remove(e)
-                        e.kill
-                        break
+                berserk([5,150])
+            if event.key == pygame.K_t:
+                tree()
         #  if event.key == pygame.K_s:
         #    if PYSPD >0:
         #       PYSPD = 0
@@ -1944,7 +1983,7 @@ while running:
                 else:
                     xposs = w+200
                     yposs = random.randint(-100, h + 100)
-                mobs.append(genmob(random.randint(1,6),[xposs-me.X,yposs-me.Y]))
+                mobs.append(genmob(random.randint(1,8),[xposs-me.X,yposs-me.Y]))
         draw2()
         for e in players:
             if e.ID != me.ID:
