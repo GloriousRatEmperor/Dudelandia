@@ -39,7 +39,6 @@ flont = pygame.font.Font('freesansbold.ttf', 80)
 flint = pygame.font.Font('freesansbold.ttf', 45)
 folnt = pygame.font.Font('freesansbold.ttf', 40)
 icon = img('man.png')
-pygame.display.set_icon(icon)
 mobs = []
 PYSPD = 0
 timedstuffs = []
@@ -47,7 +46,7 @@ PXSPD = 0
 tiles = []
 grases = [img('gras1.png'), img('gras2.png'), img('gras3.png'), img('gras4.png'), img('gras5.png')]
 terrain = []
-
+pygame.display.set_icon(icon)
 
 def blit_text(text, pos, font, max_width, color=pygame.Color('black')):
     words = [word.split(' ') for word in text.splitlines()]  # 2D array where each row is a list of words.
@@ -154,7 +153,6 @@ def shoot(e, arow, shouldIshoot):
 def atcdown(t, multiplier):
     multiplier[0].A[0] /= multiplier[1]
     timedstuffs.remove(t)
-    t.kill
     del t
 screen.fill((50,50,50))
 screen.blit(news, ((0, 0)))
@@ -176,7 +174,6 @@ def notbeserk(t,multi):
     Patcsped[1] *= multi / 2.5
     Patcsped[0] *= multi / 2.5
     timedstuffs.remove(t)
-    t.kill
     del t
 def berserk(howmuch):
     global PATC,Patcsped
@@ -197,7 +194,6 @@ def berserk(howmuch):
                 timedstuffs.sort(key=bythetime)
                 items.remove(e)
                 ActiveWeapon.remove(e)
-                e.kill
             break
 
 mobspd=0.8
@@ -206,7 +202,6 @@ def spdup(t, multiplier):
     multiplier[0].EY *= multiplier[1]
     multiplier[0].S[0] *= multiplier[1]
     timedstuffs.remove(t)
-    t.kill
     del t
 
 def hpboost(e, multiplier, nothin):
@@ -219,7 +214,6 @@ def hplow(t, multiplier):
     multiplier[0].H[0] = int(multiplier[0].H[0]*multiplier[1])
     multiplier[0].H[1] = int(multiplier[0].H[1]*multiplier[1])
     timedstuffs.remove(t)
-    t.kill
     del t
 
 bullet = img('bullet.png')
@@ -298,7 +292,6 @@ def METEOR(none,power,nothing):
                                     winfight()
                             else:
                                 lootem(b)
-                            b.kill
                 images.append(Image(e.X,e.Y,pygame.transform.smoothscale(explosionimg, (int(3216//24*power[1]), int(716//8*power[1]))),ti+10,[int(25*power[1]),int(5*power[1])]))
 def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
     global weapons, armors
@@ -437,16 +430,22 @@ def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
                         [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, weapons[0])
     elif mobnumber == 7:
         MOB=mob(position[0], position[1], [sieger, siege], 2.5, 'Blackrock cannon',
-                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 2500*ample[10], [30*ample[12], 30*ample[13]],50, weapons[5],0,0,2500)
+                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 7500*ample[10], [30*ample[12], 30*ample[13]],50, weapons[5],0,0,2500)
     elif mobnumber == 8:
-        MOB=mob(position[0], position[1], [cata, cataatc], 2.5, 'Blackrock cannon',
-                        [shoot, [[4], 20, 10*ample[13], 1, 2, demonbolt,[[summondemon,[300,20]]]]], 2500*ample[10], [30*ample[12], 30*ample[13]],220, weapons[5],0,0,2500)
+        MOB=mob(position[0], position[1], [cata, cataatc], 2.5, 'demon catapult',
+                        [shoot, [[4], 20, 10*ample[13], 1, 2, demonbolt,[[summondemon,[500,30]]]]], 2500*ample[10], [30*ample[12], 30*ample[13]],220, weapons[5],0,0,2500)
     return MOB
 minion=img('minion.png')
-minionattack=[img('minionatc.png'),img('minion.png')]
+minionattack=[img('minionatc.png')]
+megaminion=img('megaminion.png')
+megaminionattack=[img('bigminionatc.png'),img('megaminion.png')]
 def summondemon(target,stats):
     global chosen, mobs
-    MUB = mob(target.X,target.Y, [minion, minionattack], 5, 'Lesser demonspawn',
+    if stats[0]<700:
+        imajene=[minion,minionattack]
+    else:
+        imajene = [megaminion, megaminionattack]
+    MUB = mob(target.X,target.Y, [imajene[0], imajene[1]], 6, 'Lesser demonspawn',
               [], [stats[0]-1,stats[0]],
               [stats[1],stats[1]], 2, 0)
     mobs.append(MUB)
@@ -501,9 +500,6 @@ class arrow(pygame.sprite.Sprite):
         self.P = pierce
         self.ST = [5, sametarget]
         self.s = self.I.get_size()
-
-    def F(self):
-        functionlist[self.f](self, self.power)
 
 
 class timer(pygame.sprite.Sprite):
@@ -632,7 +628,6 @@ class Armor(pygame.sprite.Sprite):
         items.append(self)
         self.item = [int(w * multiplier - 4), int(h * multiplier2 - 3), merged, 0, sizo[0], sizo[1]]
         self.saveo = [e for e in self.item]
-
 class Weapon(pygame.sprite.Sprite):
     def __init__(self, X, Y, I, A,speed, SPE, cost,name):
         self.name=name
@@ -702,7 +697,6 @@ def draw00(showp):
         else:
             screen.blit(e.i, (e.X - e.s[0] // 2, e.Y - e.s[1] // 2))
 
-
 def draw0():
     for e in arrows:
         screen.blit(e.I, (e.x + me.X - e.s[0] // 2, e.y + me.Y - e.s[1] // 2))
@@ -751,7 +745,6 @@ def draw2():
                 Replacement = jsonpickle.decode(r.text)
                 shops.append(tile(Replacement.X, Replacement.Y, shoptile[Replacement.type], Replacement.ID, Replacement.type))
                 shops.remove(e)
-                e.kill
                 shoppin(e.type)
     for e in moobs:
         screen.blit(e.I, (e.X + me.X, e.Y + me.Y))
@@ -857,14 +850,12 @@ def arrowkill():
                 allyarrow.remove(e)
             else:
                 enearrow.remove(e)
-            e.kill
         elif not borderX[0]-500 < e.X + Px < borderX[1]+500:
             arrows.remove(e)
             if e in allyarrow:
                 allyarrow.remove(e)
             else:
                 enearrow.remove(e)
-            e.kill
     for e in enearrow:
         if e.ST[0] < 1:
             if e.X + Px - e.s[0] // 2 < w // 2 < e.X + Px + e.s[0] // 2:
@@ -879,7 +870,6 @@ def arrowkill():
                     if e.P == 0:
                         arrows.remove(e)
                         enearrow.remove(e)
-                        e.kill
                     else:
                         e.ST[0] = e.ST[1]
         else:
@@ -911,12 +901,10 @@ def arrowkill():
                                 winfight()
                         else:
                             lootem(b)
-                        b.kill
                     e.P -= 1
                     if e.P == 0:
                         arrows.remove(e)
                         allyarrow.remove(e)
-                        e.kill
                     else:
                         e.ST[0] = e.ST[1]
         else:
@@ -977,7 +965,6 @@ arena = 0
 chosen = []
 money = 0
 loot = []
-
 def distanceC(eneX, eneY, bulX, bulY):
     distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
     return distance
@@ -1288,7 +1275,6 @@ def mobbin(mooob):
                         if XX[1] + e.s[1] // 2 > e.Y > XX[1] - e.s[1] // 2:
                             killrog=1
                             buttons.remove(e)
-                            e.kill
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     breakme = 1
@@ -1318,7 +1304,6 @@ def mobbin(mooob):
             shoops = jsonpickle.decode(r.text)
             moobs.append(moob(shoops.X, shoops.Y, mobtile, shoops.ID, shoops.enemies,shoops.difficulty))
             moobs.remove(mooob)
-            mooob.kill
             killrog=0
             buttons = []
             break
@@ -1354,14 +1339,14 @@ def shoppin(type):
                                   [20, [[-50, 40, [potion, potion], 0, 0, [], 500
                                       , ['Health potion', 'a health potion that gives 250 instant hp, press w to activate']]]
                                       , ["HEALTH POTION","a healing potion that gives 250 instant hp, press w to activate. max 20, costs:20"]]))
-            buttons.append(button(int(w * 0.2 * e + w * 0.02), int(h * 0.78), potionr, getweapon,
+            buttons.append(button(int(w * 0.15 * e + w * 0.03), int(h * 0.78), potionr, getweapon,
                                   [200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
                                       , ['Berserker potion', 'a potion that gives 5 times basic attack damage and 2times attack speed, press e to activate.']]]
                                       , ['BERSERKER POTION', 'a potion that gives 5 times basic attack damage and 2times attack speed, press e to activate. cannot stack, costs:200']]))
-            buttons.append(button(int(w * 0.2 * e + w * 0.02), int(h * 0.78), potionr, getweapon,
-                                  [200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
-                                      , ['T potion', 'a potion that reacts with the earth, press t to activate.']]]
-                                      , ['T POTION', 'a potion that reacts with the earth, costs:500']]))
+            #buttons.append(button(int(w * 0.15 * e + w * 0.04), int(h * 0.78), potionr, getweapon,
+                                  #[200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
+                                      #, ['T potion', 'a potion that reacts with the earth, press t to activate.']]]
+                                      #, ['T POTION', 'a potion that reacts with the earth, costs:500']]))
     while True:
         XX = pygame.mouse.get_pos()
         for event in pygame.event.get():
@@ -1373,7 +1358,6 @@ def shoppin(type):
                                 money -= e.Fin[0]
                                 e.F(e.Fin[1])
                                 buttons.remove(e)
-                                e.kill
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     breakme = 1
@@ -1392,7 +1376,7 @@ def shoppin(type):
         pygame.display.update()
 
 
-shopIMG = [pygame.transform.smoothscale(img('shopkeeper.png'), (w, h)),pygame.transform.smoothscale(img('potionshop.png'), (w, h))]
+shopIMG = [pygame.transform.smoothscale(img('shopkeeper.png'), (w, h)),pygame.transform.smoothscale(img('potions.png'), (w, h))]
 def fight(ene):
     global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, mobs, PSPE, PXSPD, PYSPD
     for e in ene:
@@ -1531,7 +1515,6 @@ while True:
     for e in texts:
         if e.X < 50 - e.s[0]:
             texts.remove(e)
-            e.kill
             del e
             for d in texts:
                 vvv = d.X + 25 + d.s[0]
@@ -1620,7 +1603,6 @@ def MobAttack(t, f):
     elif rolll < f[1] - 2:
         f[0].attacking = 0
         timedstuffs.remove(t)
-        t.kill
         del t
     else:
         f[0].I = f[0].i
@@ -1672,7 +1654,6 @@ def atcright(a, f):
                 atccancel = 10
         playerIMG = atttacksIMG[4]
         timedstuffs.remove(a)
-        a.kill
         del a
         if atccancel==10:
             timedstuffs.sort(key=bythetime)
@@ -1714,7 +1695,6 @@ def atcright(a, f):
                         PSPECIAL[b][4]('mouse', PSPECIAL[b][5], a.power[0])
         for e in participants:
             if not (e.X + e.s[0] // 2 + Px > w // 2) == a.power[1]:
-                e.x + me.X, e.y + me.Y
                 firsthit = 0
                 if e.trueS==0:
                     truess=e.s
@@ -1907,7 +1887,6 @@ while running:
                         heal(0,[250,0],0)
                         items.remove(e)
                         ActiveWeapon.remove(e)
-                        e.kill
                         break
             if event.key == pygame.K_e:
                 berserk([5,150])
@@ -1965,10 +1944,8 @@ while running:
             for e in mobs:
                 if not borderY[0] - 1500 < e.Y + me.Y < borderY[1] + 1500:
                     mobs.remove(e)
-                    e.kill
                 elif not borderX[0] - 1500 < e.X + Px < borderX[1] + 1500:
                     mobs.remove(e)
-                    e.kill
             for _ in range(10):
                 poser=random.randint(1,4)
                 if poser==1:
