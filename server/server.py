@@ -53,7 +53,7 @@ class shop(object):
         self.Y=-20000 + 200 * random.randint(1, 199)
         self.type=random.randint(0,1)
 
-for e in range(10000):
+for e in range(2000):
     shops.append(shop())
 
 for e in range(500):
