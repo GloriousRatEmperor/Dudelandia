@@ -53,7 +53,7 @@ class shop(object):
         self.Y=-20000 + 200 * random.randint(1, 199)
         self.type=random.randint(0,1)
 
-for e in range(1000):
+for e in range(10000):
     shops.append(shop())
 
 for e in range(500):
@@ -98,6 +98,20 @@ def Dmgdone():
             e.physical=0
             e.spell=0
             return jsonpickle.encode([spol,phys])
+            break
+
+@app.route('/Auction', methods = ['POST'])
+def auction():
+    global shops,updates
+    update = jsonpickle.decode(request.get_data())
+    for e in shops:
+        if e.ID==update[0]:
+            for b in players:
+                if not b.ID==update[1]:
+                    b.updates.append([5,[update[1]]])
+            shops.append(newshop)
+            shops.remove(e)
+            return jsonpickle.encode(1)
             break
 
 @app.route('/ShopUpdate', methods = ['POST'])
