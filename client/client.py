@@ -1024,7 +1024,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 10000
+money = 0
 loot = []
 def distanceC(eneX, eneY, bulX, bulY):
     distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
@@ -1982,7 +1982,7 @@ def auction(itemm):
     for b in botons:
         b.owner=-1
     shoppin(2,botons)
-timera=0
+timera=time.time()+20
 def pricechange(how):
     #[[itemid,newprice],playerid of the enemy bidder]
     global money,timera
