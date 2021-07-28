@@ -610,7 +610,7 @@ class mob(pygame.sprite.Sprite):
             self.trueX = 0
             self.trueY = 0
             self.trueS = 0
-
+auctimer=time.time()
 
 class text(pygame.sprite.Sprite):
     def __init__(self, X, Y, I):
@@ -1024,7 +1024,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 0
+money = 10000
 loot = []
 def distanceC(eneX, eneY, bulX, bulY):
     distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
@@ -1373,17 +1373,39 @@ def mobbin(mooob):
 
         pygame.display.update()
 atccancel=0
+def atcP(multipliar):
+    # multipliar(amount,way),timee,hand,first
+    global PATC
+    if multipliar[3] < 2:
+        if multipliar[1] == 1:
+            PATC[multipliar[3]] += multipliar[0]
+            multnew = -multipliar[0]
+        else:
+            PATC[multipliar[3]] *= multipliar[0]
+            multnew = 1 / multipliar[0]
+    elif multipliar[1] == 0:
+        PATC[0] += multipliar[0]
+        PATC[1] += multipliar[0]
+        multnew = -multipliar[0]
+    else:
+        PATC[0] *= multipliar[0]
+        PATC[1] *= multipliar[0]
+        multnew = 1 / multipliar[0]
+    if multipliar[4] == 1:
+        timedstuffs.append(timer(atcP, multnew, ti + multipliar[2], multipliar[3], 0))
+        timedstuffs.sort(key=bythetime)
 potion=img('potion.png')
 potionr=img('potionr.png')
 potioni=img('potioni.png')
 def heala(h):
     heal(0,h,0)
-auctionitems=[potion]
-auctionfunctions=[heala]
+auctionitems=[potion,book]
 monney=0
 timerend=0
+timerb=0
+auctionfunctions=[heala,atcP]
 def shoppin(type, ite=0):
-    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons,shops,monney,auctionended,timerend,timera
+    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons,shops,monney,auctionended,timerend,timera,countdown,timerb,auctimer
     auctionended=0
     breakme = 0
     #x,y,img,the getfunction,[price,arguments,text]
@@ -1427,12 +1449,17 @@ def shoppin(type, ite=0):
                                           #, ['T potion', 'a potion that reacts with the earth, press t to activate.']]]
                                           #, ['T POTION', 'a potion that reacts with the earth, costs:']]))
         elif type==2:
-            timerend=1
-            r = requests.post('http://' + ipadress + ':5000/Auction', headers=headers,
+            if auctimer<time.time():
+                auctimer=time.time()+15
+                timerend=1
+                r = requests.post('http://' + ipadress + ':5000/Auction', headers=headers,
                               data=jsonpickle.encode([buttons, 10000]))
+            else:
+                breakme = 1
     if type==2:
         monney=money
         timera=10+time.time()
+        timerb=time.time()
     while True:
         r = requests.post('http://'+ipadress+':5000/MyUpdates', headers=headers, data=jsonpickle.encode(me.ID))
         updatess=jsonpickle.decode(r.text)
@@ -1707,27 +1734,6 @@ def SANDWICH(nomatter):
     #[0, 25, luck * 0.5 + luck ** 2 * 0.05, 1, -1,
      #pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]]
     ActiveWeapon.append(Weapon(-50, 40, [sandw,beefbook], 1, 0, [[2], 1, 1, 0, heal, [100,1]], 500,"Sandwich"))
-def atcP(multipliar):
-    # multipliar(amount,way),timee,hand,first
-    global PATC
-    if multipliar[3] < 2:
-        if multipliar[1] == 1:
-            PATC[multipliar[3]] += multipliar[0]
-            multnew = -multipliar[0]
-        else:
-            PATC[multipliar[3]] *= multipliar[0]
-            multnew = 1 / multipliar[0]
-    elif multipliar[1] == 0:
-        PATC[0] += multipliar[0]
-        PATC[1] += multipliar[0]
-        multnew = -multipliar[0]
-    else:
-        PATC[0] *= multipliar[0]
-        PATC[1] *= multipliar[0]
-        multnew = 1 / multipliar[0]
-    if multipliar[4] == 1:
-        timedstuffs.append(timer(atcP, multnew, ti + multipliar[2], multipliar[3], 0))
-        timedstuffs.sort(key=bythetime)
 
 
 
@@ -1970,8 +1976,8 @@ def auction(itemm):
         for e in b:
             e[2] = auctionitems[e[2]]
             e[3] = auctionfunctions[e[3]]
-            e[0] *= int(e[0] *w)
-            e[1] *=int(e[1] * h)
+            e[0] = int(e[0] *w)
+            e[1] =int(e[1] * h)
             botons.append(button(e[0],e[1],e[2],e[3],e[4],e[5]))
     for b in botons:
         b.owner=-1
@@ -1990,9 +1996,10 @@ def pricechange(how):
             e.owner =how[1]
 auctionended=0
 def auctionend(gain):
-    global buttons,auctionended
+    global buttons,auctionended,timerb,countdown
     auctionended=1
     dott=[]
+    countdown-=timerb-time.time()
     for e in buttons:
         if e.owner in gain:
             e.Fin[0]=0

@@ -14,6 +14,7 @@ class tile(pygame.sprite.Sprite):
 playersID=0
 moobs=[]
 moobID=0
+
 def distanceC(eneX, eneY, bulX, bulY):
     distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
     return distance
@@ -103,7 +104,13 @@ buttons=[]
 def auction():
     global shops,updates,buttons
     buttons=[]
-    for e in range(2):
+    buttons.append([0.5, 0.67, 1, 1,
+                    [1, [50, 0, 0, 2, 0]
+                        , ["The bible of facesmacking",
+                           "a permanent 50 attack boost. costs:"]], random.randint(1, 100000)])
+    for e in range(6):
+        if 0.15 * e + 0.1>0.5:
+            e+=0.3
         buttons.append([0.15 * e + 0.1, 0.78, 0, 0,
                               [1, [500, 500]
                                   , ["HEALTH POTION",
