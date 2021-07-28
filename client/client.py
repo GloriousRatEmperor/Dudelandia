@@ -1963,7 +1963,8 @@ def enedead(didIwin):
                 mobs.remove(e)
 timeouter=1
 def auction(itemm):
-    global h,w
+    global h,w,buttons
+    buttons=[]
     botons=[]
     for b in itemm:
         for e in b:

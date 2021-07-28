@@ -105,9 +105,9 @@ def auction():
     buttons=[]
     for e in range(2):
         buttons.append([0.15 * e + 0.1, 0.78, 0, 0,
-                              [1, [200, 200]
+                              [1, [500, 500]
                                   , ["HEALTH POTION",
-                                     "a permanent 200 hp health boost. costs:"]],random.randint(1,100000)])
+                                     "a permanent 500 hp health boost. costs:"]],random.randint(1,100000)])
     update = jsonpickle.decode(request.get_data())
     for b in players:
         b.updates.append([5,[buttons]])
