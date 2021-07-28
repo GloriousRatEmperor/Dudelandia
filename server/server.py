@@ -51,9 +51,8 @@ class shop(object):
         self.ID=shopID
         self.X=-20000 + 200 * random.randint(1, 199)
         self.Y=-20000 + 200 * random.randint(1, 199)
-        self.type=random.randint(0,1)
-
-for e in range(2000):
+        self.type=random.randint(0,2)
+for e in range(20000):
     shops.append(shop())
 
 for e in range(500):
@@ -99,21 +98,48 @@ def Dmgdone():
             e.spell=0
             return jsonpickle.encode([spol,phys])
             break
-
+buttons=[]
 @app.route('/Auction', methods = ['POST'])
 def auction():
-    global shops,updates
+    global shops,updates,buttons
+    buttons=[]
+    for e in range(2):
+        buttons.append([0.15 * e + 0.1, 0.78, 0, 0,
+                              [1, [200, 200]
+                                  , ["HEALTH POTION",
+                                     "a permanent 200 hp health boost. costs:"]],random.randint(1,100000)])
     update = jsonpickle.decode(request.get_data())
-    for e in shops:
-        if e.ID==update[0]:
-            for b in players:
-                if not b.ID==update[1]:
-                    b.updates.append([5,[update[1]]])
-            shops.append(newshop)
-            shops.remove(e)
-            return jsonpickle.encode(1)
-            break
+    for b in players:
+        b.updates.append([5,[buttons]])
+    return jsonpickle.encode(1)
 
+@app.route('/AuctionEnd', methods = ['POST'])
+def auctionpend():
+    update = jsonpickle.decode(request.get_data())
+    for b in players:
+        aitems=[]
+        for e in buttons:
+            if b.ID==e[1]:
+                aitems.append(e[1])
+        b.updates.append([7, aitems])
+@app.route('/AuctionPrice', methods = ['POST'])
+def auctionpUpdate():
+    global updates,buttons,players
+    update = jsonpickle.decode(request.get_data())
+    for e in buttons:
+        if e[5] == update[0][0]:
+            if e[4][0]<update[0][1]:
+                for b in players:
+                    if not b.ID == update[1]:
+                        b.updates.append([6, update])
+                    e[1]=update[1]
+                    e[4][0]=update[0][1]
+                return jsonpickle.encode(1)
+            else:
+                print("i",e[4][0],update[0][1])
+        else:
+            print(e[5], update[0][0])
+    return jsonpickle.encode(0)
 @app.route('/ShopUpdate', methods = ['POST'])
 def ShopUpdate():
     global shops,updates

@@ -220,8 +220,12 @@ def berserk(howmuch):
                             multipliers = 0.5
                             multiplier2s += 0.18
                     amountofitemsbeforethisone += 1
-                    e.item[0] = int(w * multipliers - 4)
-                    e.item[1] = int(h * multiplier2s - 3)
+                    if e.item[0]>0.4*w:
+                        e.item[0] = int(w * multipliers - 4)
+                        e.item[1] = int(h * multiplier2s - 3)
+                    else:
+                        e.saveo[0] = int(w * multipliers - 4)
+                        e.saveo[1] = int(h * multiplier2s - 3)
             break
 
 mobspd=0.8
@@ -617,7 +621,8 @@ class text(pygame.sprite.Sprite):
 
 
 class button(pygame.sprite.Sprite):
-    def __init__(self, X, Y, I, F, FunctionInput):
+    def __init__(self, X, Y, I, F, FunctionInput,ID=0):
+        self.ID=ID
         self.X = X
         self.Y = Y
         self.F = F
@@ -1018,7 +1023,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 0
+money = 10000
 loot = []
 def distanceC(eneX, eneY, bulX, bulY):
     distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
@@ -1372,8 +1377,13 @@ potionr=img('potionr.png')
 potioni=img('potioni.png')
 def heala(h):
     heal(0,h,0)
+auctionitems=[potion]
+auctionfunctions=[heala]
+monney=0
+timerend=0
 def shoppin(type, ite=0):
-    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons,shops
+    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons,shops,monney,auctionended,timerend,timer
+    auctionended=0
     breakme = 0
     #x,y,img,the getfunction,[price,arguments,text]
     if not ite==0:
@@ -1416,38 +1426,46 @@ def shoppin(type, ite=0):
                                           #, ['T potion', 'a potion that reacts with the earth, press t to activate.']]]
                                           #, ['T POTION', 'a potion that reacts with the earth, costs:']]))
         elif type==2:
+            timerend=1
             r = requests.post('http://' + ipadress + ':5000/Auction', headers=headers,
-                              data=jsonpickle.encode([buttons, me.ID]))
-            price=[]
-            for e in range(2):
-                price.append(1)
-                buttons.append(button(int(w * 0.15 * e + w * 0.02), int(h * 0.78), potion, heala,
-                                      [price[e], [200,200]
-                                          , ["HEALTH POTION",
-                                             "a permanent 200 hp health boost. costs:"]]))
-            for e in buttons:
-                e.owner=-1
+                              data=jsonpickle.encode([buttons, 10000]))
+    if type==2:
+        monney=money
+        timer=10+time.time()
     while True:
         r = requests.post('http://'+ipadress+':5000/MyUpdates', headers=headers, data=jsonpickle.encode(me.ID))
+        updatess=jsonpickle.decode(r.text)
+        for e in updatess:
+            updatelist[e[0]](e[1])
         XX = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                 for e in buttons:
                     if XX[0] + e.s[0] // 2 > e.X > XX[0] - e.s[0] // 2:
                         if XX[1] + e.s[1] // 2 > e.Y > XX[1] - e.s[1] // 2:
-                            if type == 2:
+                            if type == 2 and auctionended==0:
                                 if e.owner == me.ID:
                                     extra=0
                                 else:
                                     extra=e.Fin[0]
-                                if money > e.Fin[0] - 1+extra:
-                                    money-=e.Fin[0]+extra
-                                    e.Fin[0] *= 2
-                                    e.owner = me.ID
-                                elif money > 1+extra:
-                                    e.Fin[0] = money+e.Fin[0]-extra
-                                    money =0
-                                    e.owner = me.ID
+                                if money > e.Fin[0] +extra:
+                                    r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
+                                                      data=jsonpickle.encode([[e.ID,e.Fin[0]*2], me.ID]))
+                                    if jsonpickle.decode(r.text)==1:
+                                        if timer < time.time() + 5:
+                                            timer = time.time() + 5
+                                        e.owner = me.ID
+                                        money -= e.Fin[0] + extra
+                                        e.Fin[0] *= 2
+                                elif money > extra:
+                                    r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
+                                                      data=jsonpickle.encode([[e.ID,money+e.Fin[0]-extra], me.ID]))
+                                    if jsonpickle.decode(r.text)==1:
+                                        if timer < time.time() + 5:
+                                            timer = time.time() + 5
+                                        e.Fin[0] = money+e.Fin[0]-extra
+                                        money =0
+                                        e.owner = me.ID
                             elif money > e.Fin[0] - 1:
                                 money -= e.Fin[0]
                                 e.F(e.Fin[1])
@@ -1456,31 +1474,57 @@ def shoppin(type, ite=0):
                 for e in buttons:
                     if XX[0] + e.s[0] // 2 > e.X > XX[0] - e.s[0] // 2:
                         if XX[1] + e.s[1] // 2 > e.Y > XX[1] - e.s[1] // 2:
-                            if type == 2:
+                            if type == 2 and auctionended==0:
                                 if e.owner == me.ID:
                                     extra=0
                                 else:
                                     extra=e.Fin[0]
-                                if money > e.Fin[0]*1.1//1 - 1+extra:
-                                    money-=e.Fin[0]//10
-                                    e.Fin[0] = int(e.Fin[0]*1.1)
-                                    e.owner = me.ID
-                                elif money > extra+1:
-                                    e.Fin[0] = money+e.Fin[0]-extra
-                                    money =0
-                                    e.owner = me.ID
+
+                                if money > e.Fin[0]*1.1//1 +extra:
+                                    r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
+                                                      data=jsonpickle.encode([[e.ID,int(e.Fin[0]*1.1)], me.ID]))
+                                    if jsonpickle.decode(r.text)==1:
+                                        if timer < time.time() + 5:
+                                            timer = time.time() + 5
+                                        money-=e.Fin[0]//10
+                                        e.Fin[0] = int(e.Fin[0]*1.1)
+                                        e.owner = me.ID
+                                elif money > extra:
+                                    r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
+                                                      data=jsonpickle.encode([[e.ID,money+e.Fin[0]-extra], me.ID]))
+                                    if jsonpickle.decode(r.text)==1:
+                                        if timer < time.time() + 5:
+                                            timer = time.time() + 5
+                                        e.Fin[0] = money+e.Fin[0]-extra
+                                        money =0
+                                        e.owner = me.ID
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
-                    breakme = 1
+                    if type==2:
+                        if auctionended==1:
+                            breakme = 1
+                    else:
+                        breakme = 1
                 if event.mod & pygame.KMOD_ALT:
                     if event.key == pygame.K_F4:
                         raise SystemExit
         if breakme == 1:
             breakme = 0
+            timerend = 0
             buttons = []
             break
         screen.fill((0, 0, 0))
         screen.blit(shopIMG[type], ((0, 0)))
+        if type == 2:
+            stats = font.render('Money total: ' + str(monney), True, (220, 170, 0))
+            screen.blit(stats, ((15, 1055)))
+            stats = font.render('remaining time: ' + str(int(timer-time.time())), True, (220, 170, 0))
+            screen.blit(stats, ((15, 150)))
+            if timerend==1:
+                if timer<time.time():
+                    timerend = 0
+                    r = requests.post('http://' + ipadress + ':5000/AuctionEnd', headers=headers,
+                                      data=jsonpickle.encode(me.ID))
         stats = font.render('Money: ' + str(money), True, (220, 170, 0))
         screen.blit(stats, ((15, 1005)))
         draw00(1)
@@ -1918,8 +1962,44 @@ def enedead(didIwin):
                 mobs.remove(e)
 timeouter=1
 def auction(itemm):
-    shoppin(2,[itemm])
-updatelist=[shopreplace,moobreplace,count,Murderkill,enedead,auction]
+    global h,w
+    botons=[]
+    for b in itemm:
+        for e in b:
+            e[2] = auctionitems[e[2]]
+            e[3] = auctionfunctions[e[3]]
+            e[0] *= int(e[0] *w)
+            e[1] *=int(e[1] * h)
+            botons.append(button(e[0],e[1],e[2],e[3],e[4],e[5]))
+    for b in botons:
+        b.owner=-1
+    shoppin(2,botons)
+timer=0
+def pricechange(how):
+    #[[itemid,newprice],playerid of the enemy bidder]
+    global money,timer
+    if timer<time.time()+5:
+        timer=time.time()+5
+    for e in buttons:
+        if e.ID==how[0][0]:
+            if e.owner==me.ID:
+                money+=e.Fin[0]
+            e.Fin[0]=how[0][1]
+            e.owner =how[1]
+auctionended=0
+def auctionend(gain):
+    global buttons,auctionended
+    auctionended=1
+    dott=[]
+    for e in buttons:
+        if e.owner in gain:
+            e.Fin[0]=0
+        else:
+            dott.append(e)
+    for e in dott:
+        buttons.remove(e)
+    dott=[]
+updatelist=[shopreplace,moobreplace,count,Murderkill,enedead,auction,pricechange,auctionend]
 while running:
     XX = pygame.mouse.get_pos()
     start_time = time.time()
@@ -2013,8 +2093,12 @@ while running:
                                     multiplierr = 0.5
                                     multiplier22 += 0.18
                             amountofitemsbeforethisone+=1
-                            e.item[0] =int(w * multiplierr - 4)
-                            e.item[1]=int(h * multiplier22 - 3)
+                            if e.item[0] > 0.4 * w:
+                                e.item[0] = int(w * multiplierr - 4)
+                                e.item[1] = int(h * multiplier22 - 3)
+                            else:
+                                e.saveo[0] = int(w * multiplierr - 4)
+                                e.saveo[1] = int(h * multiplier22 - 3)
 
                         break
             if event.key == pygame.K_w:
@@ -2035,8 +2119,12 @@ while running:
                                     multiplierr = 0.5
                                     multiplier22 += 0.18
                             amountofitemsbeforethisone+=1
-                            e.item[0] =int(w * multiplierr - 4)
-                            e.item[1]=int(h * multiplier22 - 3)
+                            if e.item[0] > 0.4 * w:
+                                e.item[0] = int(w * multiplierr - 4)
+                                e.item[1] = int(h * multiplier22 - 3)
+                            else:
+                                e.saveo[0] = int(w * multiplierr - 4)
+                                e.saveo[1] = int(h * multiplier22 - 3)
 
                         break
             if event.key == pygame.K_e:
