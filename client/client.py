@@ -1382,7 +1382,7 @@ auctionfunctions=[heala]
 monney=0
 timerend=0
 def shoppin(type, ite=0):
-    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons,shops,monney,auctionended,timerend,timer
+    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding, buttons, money, weapons,shops,monney,auctionended,timerend,timera
     auctionended=0
     breakme = 0
     #x,y,img,the getfunction,[price,arguments,text]
@@ -1431,7 +1431,7 @@ def shoppin(type, ite=0):
                               data=jsonpickle.encode([buttons, 10000]))
     if type==2:
         monney=money
-        timer=10+time.time()
+        timera=10+time.time()
     while True:
         r = requests.post('http://'+ipadress+':5000/MyUpdates', headers=headers, data=jsonpickle.encode(me.ID))
         updatess=jsonpickle.decode(r.text)
@@ -1452,8 +1452,8 @@ def shoppin(type, ite=0):
                                     r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
                                                       data=jsonpickle.encode([[e.ID,e.Fin[0]*2], me.ID]))
                                     if jsonpickle.decode(r.text)==1:
-                                        if timer < time.time() + 5:
-                                            timer = time.time() + 5
+                                        if timera < time.time() + 5:
+                                            timera = time.time() + 5
                                         e.owner = me.ID
                                         money -= e.Fin[0] + extra
                                         e.Fin[0] *= 2
@@ -1461,8 +1461,8 @@ def shoppin(type, ite=0):
                                     r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
                                                       data=jsonpickle.encode([[e.ID,money+e.Fin[0]-extra], me.ID]))
                                     if jsonpickle.decode(r.text)==1:
-                                        if timer < time.time() + 5:
-                                            timer = time.time() + 5
+                                        if timera < time.time() + 5:
+                                            timera = time.time() + 5
                                         e.Fin[0] = money+e.Fin[0]-extra
                                         money =0
                                         e.owner = me.ID
@@ -1484,8 +1484,8 @@ def shoppin(type, ite=0):
                                     r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
                                                       data=jsonpickle.encode([[e.ID,int(e.Fin[0]*1.1)], me.ID]))
                                     if jsonpickle.decode(r.text)==1:
-                                        if timer < time.time() + 5:
-                                            timer = time.time() + 5
+                                        if timera < time.time() + 5:
+                                            timera = time.time() + 5
                                         money-=e.Fin[0]//10
                                         e.Fin[0] = int(e.Fin[0]*1.1)
                                         e.owner = me.ID
@@ -1493,8 +1493,8 @@ def shoppin(type, ite=0):
                                     r = requests.post('http://' + ipadress + ':5000/AuctionPrice', headers=headers,
                                                       data=jsonpickle.encode([[e.ID,money+e.Fin[0]-extra], me.ID]))
                                     if jsonpickle.decode(r.text)==1:
-                                        if timer < time.time() + 5:
-                                            timer = time.time() + 5
+                                        if timera < time.time() + 5:
+                                            timera = time.time() + 5
                                         e.Fin[0] = money+e.Fin[0]-extra
                                         money =0
                                         e.owner = me.ID
@@ -1518,10 +1518,10 @@ def shoppin(type, ite=0):
         if type == 2:
             stats = font.render('Money total: ' + str(monney), True, (220, 170, 0))
             screen.blit(stats, ((15, 1055)))
-            stats = font.render('remaining time: ' + str(int(timer-time.time())), True, (220, 170, 0))
+            stats = font.render('remaining time: ' + str(int(timera-time.time())), True, (220, 170, 0))
             screen.blit(stats, ((15, 150)))
             if timerend==1:
-                if timer<time.time():
+                if timera<time.time():
                     timerend = 0
                     r = requests.post('http://' + ipadress + ':5000/AuctionEnd', headers=headers,
                                       data=jsonpickle.encode(me.ID))
@@ -1974,12 +1974,12 @@ def auction(itemm):
     for b in botons:
         b.owner=-1
     shoppin(2,botons)
-timer=0
+timera=0
 def pricechange(how):
     #[[itemid,newprice],playerid of the enemy bidder]
-    global money,timer
-    if timer<time.time()+5:
-        timer=time.time()+5
+    global money,timera
+    if timera<time.time()+5:
+        timera=time.time()+5
     for e in buttons:
         if e.ID==how[0][0]:
             if e.owner==me.ID:
