@@ -926,6 +926,7 @@ def arrowkill():
                         me.H[0] -= (e.dmg-PPARMR*armrmult)/(8+max(PPARMR*armrmult,0)/10)*8
                         if me.H[0]<0:
                             playerdown()
+                            break
                     e.P -= 1
                     if e.P == 0:
                         arrows.remove(e)
