@@ -186,8 +186,8 @@ def tree():
 def notbeserk(t,multi):
     global Patcsped,atcmult
     atcmult/=multi
-    Patcsped[1] *= multi / 2.5
-    Patcsped[0] *= multi / 2.5
+    Patcsped[1] *= multi
+    Patcsped[0] *= multi
     timedstuffs.remove(t)
     del t
 def berserk(howmuch):
@@ -202,8 +202,8 @@ def berserk(howmuch):
                     break
             if cancel < 1:
                 atcmult*=howmuch[0]
-                Patcsped[1]/=howmuch[0]/2.5
-                Patcsped[0]/=howmuch[0]/2.5
+                Patcsped[1]/=howmuch[0]
+                Patcsped[0]/=howmuch[0]
                 timedstuffs.append(timer(notbeserk, ti + howmuch[1], howmuch[0], 1))
                 timedstuffs.sort(key=bythetime)
                 items.remove(e)
@@ -291,6 +291,9 @@ defend=img('defenders hammercrpd.png')
 defendcrpd=img('defenders hammer.png')
 wata=img('waterforged battleaxe.png')
 watacrpd=img('waterforged battleaxecrpd.png')
+axe3=img('throwaxe2.png')
+axe=img('throwaxe.png')
+axe2=img('throwaxecrpd.png')
 METEORFAZE=0
 XXbefore=[]
 explosionimg=img('explosion.png')
@@ -382,7 +385,7 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
 
     weapons = [[-50, 40, [chopper, choppercrpd], 6 + luck // 1.5*bigmult,0, [], int(100 + luck*3*bigmult),
                 [big+quality + ' Chopper', 'quite a basic sword, decently long though, costs:']]
-        , [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 2.5*bigmult,-2-luck//10, [],int(75 + luck**2*1.5*bigmult),
+        , [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 2.5*bigmult,-2-luck//10, [],int(75 + luck**2*bigmult),
            [big+quality + ' Zandalari meatcleaver', 'short and weak, but fast costs:']]
         , [-50, 40, [ice, ice2], 30 + luck // 2*bigmult,0-luck//15,
            [[1], 0, 0, 100, slow, ['*line 1', 1.09 + luck / 120, 70 + luck/3]], int(250 + luck*luck*2*bigmult),
@@ -404,9 +407,16 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
            [[1,2], 1, 1, 0, defender, [2+luck*0.05, 250]], int(250 + luck * luck * 2 * bigmult),
            [big + quality + ' Defender\'s hammer',
             'a powerful hammer of a fallen champion, boosts your defence greatly for a few seconds, but does not stack. costs:']]
-    ,[-50, 40, [wata, watacrpd], 60 + luck*15*bigmult, 0, [[2], 1, 1, 0, teleport, [2+luck*0.05, 250]], int((6000 + luck*100)*bigmult),
+    ,[-50, 40, [wata, watacrpd], 65 + luck*20*bigmult, 3, [[2], 1, 1, 0, teleport, [2+luck*0.05, 250]], int((6000 + luck*100)*bigmult),
      [big + quality + ' Waterforged Battleaxe',
-      'somewhat slow, but big damage. casts teleport, costs:' ]]]
+      'somewhat slow, but big damage. casts teleport, costs:' ]]
+
+        , [-50, 40, [axe, axe2],3+luck //2* bigmult, 4 - luck // 10,
+           [[2], 1, 1, 0, shoot, [0, 25, (luck * 0.5+2)* bigmult, 1, -1,
+                                  pygame.transform.smoothscale(axe3, (int(65 * bigmult), int(90 * bigmult)))]],
+           int(200 + luck*5*bigmult), [big + quality + ' Throwing axe',
+                                                  'unlike guns melee attacks do actual damage costs:']]
+               ]
           #I, Armor, PArmor, helf, SPE, cost
 
     armors =[[[torso, torso2], 5 + luck // 3, 2 + luck // 8, int(100+luck*luck/5*(bigmult*3-2)), [], 400+bigmult*2000 + luck*luck//2,
@@ -438,6 +448,8 @@ demonboltbig=pygame.transform.smoothscale(img('demonbolt.png'),(700,340))
 sieger=img('sieger.png')
 cata=img('catapult.png')
 alien=img('alien.png')
+blob=img('blob.png')
+blobatc=[img('blobatc.png'),img('blob.png')]
 alienatc=[img('alienatc1.png'),img('alienatc2.png')]
 cataatc=[img('catapult.png'),img('catapult3.png'),img('catapult4.png')]
 siege=[sieger,sieger,sieger,sieger,sieger,sieger,sieger]
@@ -454,6 +466,8 @@ ampla=[2,2 ,0.5,0.5, 2,2, 0.05,0.08, 8,1, 1,1, 0.025,0.01]
 ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
     global ampli,ampla
+    if itemgood==0:
+        itemgood=random.randint(1,15)
     weaponsRANDOM(itemgood)
     if power[1]==1:
         ample=[e*power[0] for e in ampla]
@@ -484,13 +498,16 @@ def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
                         [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, armors[0])
     elif mobnumber == 7:
         MOB=mob(position[0], position[1], [sieger, siege], 2.5, 'Blackrock cannon',
-                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 7500*ample[10], [30*ample[12], 30*ample[13]],50, weapons[6],0,0,2500)
+                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 7500*ample[10], [30*ample[12], 30*ample[13]],50, weapons[3],0,0,2500)
     elif mobnumber == 8:
         MOB=mob(position[0], position[1], [cata, cataatc], 2.5, 'demon catapult',
-                        [shoot, [[4], 40, 10*ample[13], 1, 2, demonbolt,[[summondemon,[500,30]]]]], 2500*ample[10], [0, 0],90, weapons[5],0,0,2500)
+                        [shoot, [[4], 40, 10*ample[13], 1, 2, demonbolt,[[summondemon,[100,30]]]]], 600*ample[10], [0, 0],90, weapons[5],0,0,2500)
     elif mobnumber == 9:
         MOB=mob(position[0], position[1], [alien, alienatc], 2.5, 'Demon overseer',
-                        [shoot, [[3], 60, 10*ample[13], 1, 2, demonboltbig,[[summondemon,[1200,80]]]]], 2500*ample[10], [300*ample[12], 300*ample[13]],90, weapons[6],0,0,2500)
+                        [shoot, [[3], 60, 10*ample[13], 1, 2, demonboltbig,[[summondemon,[1200,80]]]]], 2500*ample[10], [300*ample[12], 300*ample[13]],90, weapons[7],0,0,2500)
+    elif mobnumber == 10:
+        MOB=mob(position[0], position[1], [blob, blobatc], 2, 'blob',
+                        [atcup, [[2], 40, 220]], 25, [1, 1],200, weapons[8])
     return MOB
 minion=img('minion.png')
 minionattack=[img('minionatc.png')]
@@ -598,7 +615,7 @@ class mob(pygame.sprite.Sprite):
             self.H = [H, H]
         self.N = N
         self.EX = 0
-        self.loot = random.choice([(self.H[1]*3), Loot])
+        self.loot = random.choice([int(math.sqrt(self.H[1])*30), Loot])
         self.EY = 0
         self.tired = [1, 200]
         self.s = self.I.get_size()
@@ -610,7 +627,7 @@ class mob(pygame.sprite.Sprite):
             self.trueX = 0
             self.trueY = 0
             self.trueS = 0
-auctimer=time.time()
+auctimer=time.time()+25
 
 class text(pygame.sprite.Sprite):
     def __init__(self, X, Y, I):
@@ -747,11 +764,17 @@ def draw00(showp):
         if XX[0] + e.s[0] // 2 > e.X > XX[0] - e.s[0] // 2:
             if XX[1] + e.s[1] // 2 > e.Y > XX[1] - e.s[1] // 2:
                 screen.blit(e.I, (e.X - e.S[0] // 2, e.Y - e.S[1] // 2))
-                if showp == 1:
+                if showp > 0:
                     screen.blit(speech, (w * 0.5, h * 0.05))
                     itemname = flint.render(e.Fin[2][0], True, (255, 0, 0))
                     screen.blit((itemname), (w * 0.52, h * 0.059))
-                    blit_text(e.Fin[2][1]+str(e.Fin[0]), [w * 0.52, h * 0.1], font, w * 0.9)
+                    blit_text(e.Fin[2][1]+str(int(e.Fin[0])), [w * 0.52, h * 0.1], font, w * 0.9)
+                    if showp ==2:
+                        if e.owner==me.ID:
+                            itemname = flint.render("YOU OWN THOS", True, (0, 255, 0))
+                        else:
+                            itemname = flint.render("YOU OWN NOT THOS", True, (255, 0, 0))
+                        screen.blit((itemname), (w * 0.52, h * 0.2))
             else:
                 screen.blit(e.i, (e.X - e.s[0] // 2, e.Y - e.s[1] // 2))
         else:
@@ -1024,7 +1047,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 0
+money = 20000000000000000
 loot = []
 def distanceC(eneX, eneY, bulX, bulY):
     distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
@@ -1105,7 +1128,7 @@ def unequippedArmr(bo):
         if bo.SPE in PASPE:
             PASPE.remove(bo.SPE)
         else:
-            print('for sum reason the special of ' + str(e) + 'is not in PASPE')
+            print('for sum reason the special of ' + str(bo) + 'is not in PASPE')
     bo.item = [e for e in bo.saveo]
 
 
@@ -1113,12 +1136,13 @@ def unequippedweapon(bo, hand):
     global PATC,Patcsped
     ActiveWeapon.append(bo)
     PATC[hand] -= bo.A
-    Patcsped[hand*-1+1] -= bo.speed
+    Patcsped[hand*-1+1] /= bo.speed/10+1
+    print(Patcsped,0)
     if not bo.SPE == []:
         if bo.SPE in PSPECIAL:
             PSPECIAL.remove(bo.SPE)
         else:
-            print('for sum reason the special of ' + str(e) + 'is not in PSPE')
+            print('for sum reason the special of ' + str(bo) + 'is not in PSPE')
     PRange[hand] -= bo.R // 2
     bo.item = [e for e in bo.saveo]
     ActiveWeaponer.remove(bo)
@@ -1130,7 +1154,8 @@ def equippedweapon(weapon, hand):
     PRange[hand] += weapon.R // 2
     weapon.item[2] = pygame.transform.smoothscale(weapon.item[2],
                                                   (int(weapon.item[4] * 1.25), int(weapon.item[5] * 1.25)))
-    Patcsped[hand*-1+1] += weapon.speed
+    Patcsped[hand*-1+1] *= weapon.speed/10+1
+    print(Patcsped,10)
     weapon.item[3] = -1
     if not weapon.SPE == []:
         if len(weapon.SPE)>3:
@@ -1354,7 +1379,7 @@ def mobbin(mooob):
         draw00(0)
         stats = flint.render('Money: ' + str(int(mooob.d*80+mooob.d*mooob.d*10)), True, (0, 200, 0))
         screen.blit(stats, (1400, 750))
-        stats = flint.render('difficulty: ' + str(int(mooob.d*80+mooob.d*mooob.d*10)), True, (0, 200, 0))
+        stats = flint.render('difficulty: ' + str(int(mooob.d*10)), True, (0, 200, 0))
         screen.blit(stats, (1400, 800))
         if killrog==1:
             mooob.enter()
@@ -1438,8 +1463,8 @@ def shoppin(type, ite=0):
                                           , ["HEALTH POTION","a healing potion that gives 250 instant hp, press w to activate. max 20, costs:"]]))
                 buttons.append(button(int(w * 0.15 * e + w * 0.03), int(h * 0.78), potionr, getweapon,
                                       [200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
-                                          , ['Berserker potion', 'a potion that gives 5 times basic attack damage and 2times attack speed, press e to activate.']]]
-                                          , ['BERSERKER POTION', 'a potion that gives 5 times basic attack damage and 2times attack speed, press e to activate. cannot stack, costs:']]))
+                                          , ['Berserker potion', 'a potion that gives 2 times basic attack damage and 2times attack speed, press e to activate.']]]
+                                          , ['BERSERKER POTION', 'a potion that gives 2 times basic attack damage and 2times attack speed, press e to activate. cannot stack, costs:']]))
                 buttons.append(button(int(w * 0.15 * e + w * 0.04), int(h * 0.78), potioni, getweapon,
                                       [200, [[-50, 40, [potioni, potioni], 0, 0, [], 700
                                           , ['teleport potion', 'a potion that teleports you to your cursor, press s to activate.']]]
@@ -1450,7 +1475,6 @@ def shoppin(type, ite=0):
                                           #, ['T POTION', 'a potion that reacts with the earth, costs:']]))
         elif type==2:
             if auctimer<time.time():
-                auctimer=time.time()+15
                 timerend=1
                 r = requests.post('http://' + ipadress + ':5000/Auction', headers=headers,
                               data=jsonpickle.encode([buttons, 10000]))
@@ -1555,7 +1579,10 @@ def shoppin(type, ite=0):
                                       data=jsonpickle.encode(me.ID))
         stats = font.render('Money: ' + str(money), True, (220, 170, 0))
         screen.blit(stats, ((15, 1005)))
-        draw00(1)
+        if type==2:
+            draw00(2)
+        else:
+            draw00(1)
         pygame.display.update()
 
 
@@ -1996,7 +2023,7 @@ def pricechange(how):
             e.owner =how[1]
 auctionended=0
 def auctionend(gain):
-    global buttons,auctionended,timerb,countdown
+    global buttons,auctionended,timerb,countdown,auctimer
     auctionended=1
     dott=[]
     countdown-=timerb-time.time()
@@ -2007,6 +2034,7 @@ def auctionend(gain):
             dott.append(e)
     for e in dott:
         buttons.remove(e)
+    auctimer = time.time() + 10
     dott=[]
 updatelist=[shopreplace,moobreplace,count,Murderkill,enedead,auction,pricechange,auctionend]
 while running:
@@ -2137,7 +2165,7 @@ while running:
 
                         break
             if event.key == pygame.K_e:
-                berserk([5,150])
+                berserk([2,150])
 
             if event.key == pygame.K_t:
                 tree()
@@ -2209,7 +2237,10 @@ while running:
                 else:
                     xposs = w+200
                     yposs = random.randint(-100, h + 100)
-                mobs.append(genmob(random.randint(1,9),[xposs-me.X,yposs-me.Y]))
+                maxkill=min(10,max(3,int((abs(Px)+abs(Py))/1000)))
+                mobbydifficulty=[10,3,1,5,6,8,2,9,4,7]
+                minkill=max(1,maxkill-4)
+                mobs.append(genmob(mobbydifficulty[random.randint(minkill,maxkill)-1],[xposs-me.X,yposs-me.Y]))
         draw2()
         for e in players:
             if e.ID != me.ID:

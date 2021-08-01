@@ -53,6 +53,9 @@ class shop(object):
         self.X=-20000 + 200 * random.randint(1, 199)
         self.Y=-20000 + 200 * random.randint(1, 199)
         self.type=random.randint(0,2)
+        if random.randint(-10,10)<10:
+            if self.type==2:
+                self.type=0
 for e in range(1000):
     shops.append(shop())
 
@@ -108,13 +111,11 @@ def auction():
                     [1, [50, 0, 0, 2, 0]
                         , ["The bible of facesmacking",
                            "a permanent 50 attack boost. costs:"]], random.randint(1, 100000)])
-    for e in range(6):
-        if 0.15 * e + 0.1>0.5:
-            e+=0.3
-        buttons.append([0.15 * e + 0.1, 0.78, 0, 0,
-                              [1, [250, 250]
+    for e in range(2):
+        buttons.append([0.48 * e + 0.282, 0.75, 0, 0,
+                              [1, [850, 850]
                                   , ["HEALTH POTION",
-                                     "a permanent 250 hp health boost. costs:"]],random.randint(1,100000)])
+                                     "a permanent 850 hp health boost. costs:"]],random.randint(1,100000)])
     update = jsonpickle.decode(request.get_data())
     for b in players:
         b.updates.append([5,[buttons]])
