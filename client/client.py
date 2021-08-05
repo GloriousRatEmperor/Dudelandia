@@ -19,13 +19,10 @@ class player(object):
         self.X=X
         self.Y=Y
         self.H =H
-
 with open("ip.txt", "r") as ip:
     ipadress=ip.read()
-
 r = requests.get(f'http://{ipadress}:5000/start')
 me=jsonpickle.decode(r.text)
-
 def img(imgname):
     return pygame.image.load(imgname).convert_alpha()
 
@@ -69,6 +66,7 @@ def blit_text(text, pos, font, max_width, color=pygame.Color('black')):
 atcmult=1
 Px = 0
 Py = 0
+regen=0.007
 PARMR = 0
 PPARMR = 0
 armrmult=1
@@ -150,7 +148,6 @@ def shoot(e, arow, shouldIshoot):
         arrows.append(arrow(e.x + e.s[0] // 2, e.y + e.s[1] // 2, spdx, spdy, arow[2], arow[3], arow[4], 0, final,arow[6]))
     else:
         arrows.append(arrow(w // 2 - Px, h // 2 - Py, -spdx, -spdy, arow[2], arow[3], -arow[4] + 1, 1, final,arow[6]))
-
 def atcdown(t, multiplier):
     multiplier[0].A[0] /= multiplier[1]
     timedstuffs.remove(t)
@@ -235,6 +232,12 @@ def spdup(t, multiplier):
     multiplier[0].S[0] *= multiplier[1]
     timedstuffs.remove(t)
     del t
+def atcchange(more,mult):
+    global atcmult
+    if more==1:
+        atcmult*=mult
+    else:
+        atcmult/=mult
 def defendnot(t, multiplier):
     global PARMR,PPARMR,armrmult
     PARMR-=(multiplier[1]-1.8)*50
@@ -283,6 +286,11 @@ torso2=img('torsoarmorcrpd.png')
 demon=img('demonplate.png')
 deflect=img('projectiledeflector.png')
 life=img('lifegown.png')
+furnace=pygame.transform.smoothscale(img('faceforge.png'), (50,50))
+furnace2=pygame.transform.smoothscale(img('faceforge.png'), (100,100))
+
+horned=pygame.transform.smoothscale(img('horned.png'), (76,120))
+horned2=pygame.transform.smoothscale(img('horned2.png'), (120,120))
 target=img('target.png')
 meteo=img('meteor.png')
 staffm=img('staffmnotcrpd.png')
@@ -344,7 +352,6 @@ def METEOR(none,power,nothing):
                             else:
                                 lootem(b)
                 images.append(Image(e.X,e.Y,pygame.transform.smoothscale(explosionimg, (int(3216//24*power[1]), int(716//8*power[1]))),ti+10,[int(25*power[1]),int(5*power[1])]))
-
 def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
     global weapons, armors
     big=""
@@ -420,13 +427,24 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
           #I, Armor, PArmor, helf, SPE, cost
 
     armors =[[[torso, torso2], 5 + luck // 3, 2 + luck // 8, int(100+luck*luck/5*(bigmult*3-2)), [], 400+bigmult*2000 + luck*luck//2,
-                [big + quality + ' Torsoarmor', 'quite a basic armorpiece, still much better than nothing though, costs:' ]],
+                [big + quality + ' Torsoarmor', 'quite a basic armorpiece, still much better than nothing though, costs:' ],1,0],
     [[demon, demon], int((35 + luck*1.5)*(bigmult*3-2)),4 + luck // 7,int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*2000 + int(luck*luck*1.5),
-                [big + quality + 'Demonplate', 'has a lot of armor, not so much health though, costs:' ]],
+                [big + quality + ' Demonplate', 'has a lot of armor, not so much health though, costs:' ],1,0],
     [[deflect, deflect], (7 + int(luck*0.3))*(bigmult*3-2),(10 + luck*2)*(bigmult*3-2),int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*1500 + int(luck*luck*1.5),
-                [big + quality + 'The Deflector', 'has some armor, not much health, but protects from projectiles (and special sources of damage) costs:' ]],
-    [[life, life], -45 - int(luck*1)-50*(bigmult*2-2),-70 - int(luck*1.5)-400*(bigmult*2-2),int(600+luck*luck*1.8+ 10000*(bigmult*2-2)), [], 600 +bigmult*2000 + int(luck*luck*1.5),
-                [big + quality + 'Lifegown', 'has a lot of helf, not so healthy though, considering the negative armor, costs:' ]]]
+                [big + quality + ' The Deflector', 'has some armor, not much health, but protects from projectiles (and special sources of damage) costs:' ],1,0],
+    [[life, life], -45 - int(luck*1)-70*(bigmult*2-2),-40 - int(luck*1.5)-70*(bigmult*2-2),int(600+luck*luck*1.8+ 13000*(bigmult*2-2)), [], 600 +bigmult*2000 + int(luck*luck*1.5),
+                [big + quality + ' Lifegown', 'has a lot of helf and regen, but has negative armour, costs:' ],1,0.01*luck+luck**2*0.0005+bigmult*2-2],
+    [[furnace, furnace2], 30 + luck*2 + 200 * (bigmult * 2 - 2),
+              20 + int(luck*1.6) + 150 * (bigmult * 2 - 2), -100,
+              [], 600 + bigmult * 2000 + int(luck * luck * 1.5),
+              [big + quality + ' Face Forge',
+               'has a lot of armour, but reduces your health and scorches your face. poorly made ones are sometimes not worth it, costs:'], 2,-0.15],
+    [[horned, horned2], 25 + luck*1.5 + 200 * (bigmult * 2 - 2),
+              20 + int(luck*1.5) + 150 * (bigmult * 2 - 2), 0,
+              [[[1],atcchange,math.sqrt(luck)/5+1]], 600 + bigmult * 2000 + int(luck * luck * 1.5),
+              [big + quality + ' Horned helmet',
+               'has a decent amount of armour, increases attack when equipped, costs:'], 2,0]
+             ]
 
     if bigmult !=1:
         for e in weapons:
@@ -668,12 +686,16 @@ class item(pygame.sprite.Sprite):
         self.I = I
         self.s = self.I.get_size()
 
-
+armorplace=[0.5,0.5,0.5,0.45]
+armorspot=[0.025,0.345,0.025,0.365]
 items = []
 class Armor(pygame.sprite.Sprite):
-    def __init__(self, I, Armor, PArmor, helf, SPE, cost,name):
+    def __init__(self,I, Armor, PArmor, helf, SPE, cost,name,ID,regeneration):
+        #ID is armorplace[e.ID] for its position when equipped and armorspot[e.ID] for position in inventory. this allows for easy helmets, chestplates, shoulderpads and so on
         self.name=name
         self.cost = cost
+        self.ID=ID
+        self.r=regeneration
         self.I = I[0]
         self.Icropped = I[1]
         self.A = Armor
@@ -744,7 +766,8 @@ class Weapon(pygame.sprite.Sprite):
         self.item = [int(w * multiplier - 4), int(h * multiplier2 - 3), merged, 0, sizoo[0], sizoo[1]]
         self.saveo = [e for e in self.item]
 
-
+def byid(e):
+    return e.ID
 def bythetime(e):
     return e.T
 
@@ -1047,7 +1070,7 @@ def mobmov():
 
 arena = 0
 chosen = []
-money = 1
+money =0
 loot = []
 def distanceC(eneX, eneY, bulX, bulY):
     distance = math.sqrt((math.pow(eneX - bulX, 2)) + (math.pow(eneY - bulY, 2)))
@@ -1078,7 +1101,7 @@ def winfight(lootit=1):
                 if isinstance(e[0], int):
                     ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5], e[6],e[7]))
                 else:
-                    unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5],e[6]))
+                    unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5],e[6],e[7],e[8]))
             else:
                 money += e
     loot = []
@@ -1093,12 +1116,13 @@ def lootem(ene):
             if isinstance(e[0], int):
                 ActiveWeapon.append(Weapon(e[0], e[1], e[2], e[3], e[4], e[5],e[6],e[7]))
             else:
-                unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5],e[6]))
+                unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5],e[6],e[7],e[8]))
         else:
             money += e
     loot = []
 def equippedArmr(armor):
-    global PATC, Activearmor, Activearmor, PlayerSize, PSPECIAL,Patcsped,me,PASPE,PARMR,PPARMR
+    global PATC, Activearmor, Activearmor, PlayerSize, PSPECIAL,Patcsped,me,PASPE,PARMR,PPARMR,regen
+    regen += armor.r
     armor.item[2] = pygame.transform.smoothscale(armor.item[2],
                                                   (int(armor.item[4] * 1.25), int(armor.item[5] * 1.25)))
     PARMR+=armor.A
@@ -1107,17 +1131,22 @@ def equippedArmr(armor):
     me.H[1] += armor.H
     armor.item[3] = -1
     if not armor.SPE == []:
-        PASPE.append(armor.SPE)
-    armor.item[0] = int(w * 0.025)
-    armor.item[1] = int(h * 0.345)
+        for e in armor.SPE:
+            if e[0][0]==1:
+                e[1](1,e[2])
+            PASPE.append(e)
+    armor.item[0] = int(w * armorspot[armor.ID-1])
+    armor.item[1] = int(h * armorspot[armor.ID*2-1])
     Activearmor.append(armor)
+    Activearmor.sort(key=byid)
     unActivearmor.remove(armor)
 PASPE=[]
 unActivearmor=[]
 Activearmor=[]
 
 def unequippedArmr(bo):
-    global me, unActivearmor,Activearmor,PASPE, PARMR,PPARMR
+    global me, unActivearmor,Activearmor,PASPE, PARMR,PPARMR,regen
+    regen-=bo.r
     unActivearmor.append(bo)
     Activearmor.remove(bo)
     me.H[0]-=bo.H
@@ -1125,10 +1154,13 @@ def unequippedArmr(bo):
     PARMR -= bo.A
     PPARMR -= bo.PA
     if not bo.SPE == []:
-        if bo.SPE in PASPE:
-            PASPE.remove(bo.SPE)
-        else:
-            print('for sum reason the special of ' + str(bo) + 'is not in PASPE')
+        for e in bo.SPE:
+            if e[0][0]==1:
+                e[1](0,e[2])
+            elif e in PASPE:
+                PASPE.remove(e)
+            else:
+                print('for sum reason the special of ' + str(bo) + 'is not in PASPE')
     bo.item = [e for e in bo.saveo]
 
 
@@ -1137,7 +1169,6 @@ def unequippedweapon(bo, hand):
     ActiveWeapon.append(bo)
     PATC[hand] -= bo.A
     Patcsped[hand*-1+1] /= bo.speed/10+1
-    print(Patcsped,0)
     if not bo.SPE == []:
         if bo.SPE in PSPECIAL:
             PSPECIAL.remove(bo.SPE)
@@ -1155,7 +1186,6 @@ def equippedweapon(weapon, hand):
     weapon.item[2] = pygame.transform.smoothscale(weapon.item[2],
                                                   (int(weapon.item[4] * 1.25), int(weapon.item[5] * 1.25)))
     Patcsped[hand*-1+1] *= weapon.speed/10+1
-    print(Patcsped,10)
     weapon.item[3] = -1
     if not weapon.SPE == []:
         if len(weapon.SPE)>3:
@@ -1188,9 +1218,8 @@ bl = 0
 holding = 0
 biggafish = img("man.png")
 stot=img("weaponstater.png")
-
 def menu():
-    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding,unActivearmor,start_time
+    global breakme, ActiveWeapon, ActiveWeaponer, PATC, holding,unActivearmor,start_time,atcmult
     allposdown=0
     blobl=3
     while True:
@@ -1232,8 +1261,13 @@ def menu():
                                     break
                                 elif XX[0] < w * 0.2:
                                     if e in unActivearmor or e in Activearmor:
+                                        gitremoved=[]
                                         for b in Activearmor:
-                                            unequippedArmr(b)
+                                            if b.ID==e.ID:
+                                                gitremoved.append(b)
+                                        for f in gitremoved:
+                                            unequippedArmr(f)
+                                        gitremoved=[]
                                         equippedArmr(e)
                                     else:
                                         if e in ActiveWeaponer:
@@ -1250,8 +1284,13 @@ def menu():
                                     break
                                 else:
                                     if e in unActivearmor or e in Activearmor:
+                                        gitremoved=[]
                                         for b in Activearmor:
-                                            unequippedArmr(b)
+                                            if b.ID==e.ID:
+                                                gitremoved.append(b)
+                                        for f in gitremoved:
+                                            unequippedArmr(f)
+                                        gitremoved=[]
                                         equippedArmr(e)
                                     else:
                                         if e in ActiveWeaponer:
@@ -1319,7 +1358,7 @@ def menu():
                 screen.blit(g.item[2], ((XX[0] - g.item[4] // 2, XX[1] - g.item[5] // 2)))
 
         draw00(0)
-        stats = font.render('attack: ' + str(int(PATC[1])) + ',' + str(int(PATC[0])), True, (0, 0, 0))
+        stats = font.render('attack: ' + str(int(PATC[1]*atcmult)) + ',' + str(int(PATC[0]*atcmult)), True, (0, 0, 0))
         screen.blit(stats, ((15, 800)))
         stats = font.render('health: ' + str(int(me.H[0])) + '/' + str(int(me.H[1])), True, (0, 0, 0))
         screen.blit(stats, ((15, 825)))
@@ -1333,7 +1372,7 @@ def menu():
 
 def getarmor(theitem):
     theitem = theitem[0]
-    unActivearmor.append(Armor(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4],theitem[5],theitem[6]))
+    unActivearmor.append(Armor(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4],theitem[5],theitem[6],theitem[7],theitem[8]))
 def getweapon(theitem):
     theitem = theitem[0]
     ActiveWeapon.append(Weapon(theitem[0], theitem[1], theitem[2], theitem[3], theitem[4], theitem[5],theitem[6],theitem[7]))
@@ -1398,6 +1437,7 @@ def mobbin(mooob):
 
         pygame.display.update()
 atccancel=0
+
 def atcP(multipliar):
     # multipliar(amount,way),timee,hand,first
     global PATC
@@ -1461,11 +1501,11 @@ def shoppin(type, ite=0):
                                       [20, [[-50, 40, [potion, potion], 0, 0, [], 500
                                           , ['Health potion', 'a health potion that gives 250 instant hp, press w to activate']]]
                                           , ["HEALTH POTION","a healing potion that gives 250 instant hp, press w to activate. max 20, costs:"]]))
-                buttons.append(button(int(w * 0.15 * e + w * 0.03), int(h * 0.78), potionr, getweapon,
+                buttons.append(button(int(w * 0.15 * e + w * 0.035), int(h * 0.78), potionr, getweapon,
                                       [200, [[-50, 40, [potionr, potionr], 0, 0, [], 500
                                           , ['Berserker potion', 'a potion that gives 2 times basic attack damage and 2times attack speed, press e to activate.']]]
                                           , ['BERSERKER POTION', 'a potion that gives 2 times basic attack damage and 2times attack speed, press e to activate. cannot stack, costs:']]))
-                buttons.append(button(int(w * 0.15 * e + w * 0.04), int(h * 0.78), potioni, getweapon,
+                buttons.append(button(int(w * 0.15 * e + w * 0.05), int(h * 0.78), potioni, getweapon,
                                       [200, [[-50, 40, [potioni, potioni], 0, 0, [], 700
                                           , ['teleport potion', 'a potion that teleports you to your cursor, press s to activate.']]]
                                           , ['TELEPORT POTION', 'a potion that teleports you to your cursor, costs:']]))
@@ -2175,6 +2215,8 @@ while running:
     screen.fill((200, 0, 0))
     if me.H[0]>me.H[1]:
         me.H[0]-=min(17000000,me.H[0]-me.H[1])
+    elif me.H[0]<me.H[1]:
+        me.H[0]+=regen
     if arena == 1:
         if to % 150 == 0:
             mobspd+=0.01
@@ -2263,7 +2305,7 @@ while running:
     for e in ActiveWeaponer:
         screen.blit(e.I, (int(((w + e.X[0]) / 2) - e.s[0] / 2), int(((h + e.Y[0]) / 2) - e.s[1] / 2)))
     for e in Activearmor:
-        screen.blit(e.I,(w//2-e.s[0]//2,h//2-e.s[1] // 2))
+        screen.blit(e.I,(w* armorplace[e.ID-1]-e.s[0]//2,h* armorplace[e.ID*2-1]-e.s[1] // 2))
     draw0()
     draw00(0)
 

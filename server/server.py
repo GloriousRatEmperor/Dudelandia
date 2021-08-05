@@ -72,6 +72,23 @@ app = Flask(__name__)
 
 f=1
 updates=[]
+
+
+@app.route('/start')
+def start():
+    global players, countdown
+    print(1)
+    newplayer=player()
+    players.append(newplayer)
+    if len(players)==2:
+        countdown=int(time.time())
+        for e in players:
+            e.updates.append([2,[countdown]])
+    elif countdown>0:
+        newplayer.updates.append([2, [countdown]])
+    return jsonpickle.encode(newplayer)
+
+
 @app.route('/Murderfight', methods = ['POST'])
 def Murderfight():
     global updates
@@ -233,30 +250,22 @@ def game_endpoint(name):
         f+=1
         return f"Hello, {name} {f}!"
 
-@app.route('/start')
-def startdfhd():
-    global players,countdown
-    newplayer=player()
-    players.append(newplayer)
-    if len(players)==2:
-        countdown=int(time.time())
-        for e in players:
-            e.updates.append([2,[countdown]])
-    elif countdown>0:
-        newplayer.updates.append([2, [countdown]])
-    return jsonpickle.encode(newplayer)
 
 @app.route('/shoppos')
 def shopposer():
     global shops
     return jsonpickle.encode(shops)
+
+
 @app.route('/mobbos')
 def mobboser():
     global moobs
     return jsonpickle.encode(moobs)
+
+
 @app.route('/time')
 def time_endpoint():
     return "%f" % time.time()
 
 
-app.run('0.0.0.0', 5000, True)
+app.run(host='0.0.0.0', port=5000, debug=True)
