@@ -1,6 +1,7 @@
+import pygame
+import time
 from flask import Flask, request
 import jsonpickle
-import time
 import random
 import pygame
 import math
@@ -37,6 +38,7 @@ class player(object):
         playersID+=1
         self.ID=playersID
         self.X=0
+        self.XP = [0,10,1]
         self.Y=0
         self.dead=0
         self.spell = 0
@@ -53,7 +55,7 @@ class shop(object):
         self.X=-20000 + 200 * random.randint(1, 199)
         self.Y=-20000 + 200 * random.randint(1, 199)
         self.type=random.randint(0,2)
-        if random.randint(-10,10)<10:
+        if random.randint(0,10)<10:
             if self.type==2:
                 self.type=0
 for e in range(1000):
@@ -77,7 +79,6 @@ updates=[]
 @app.route('/start')
 def start():
     global players, countdown
-    print(1)
     newplayer=player()
     players.append(newplayer)
     if len(players)==2:
@@ -118,7 +119,6 @@ def Dmgdone():
             e.physical=0
             e.spell=0
             return jsonpickle.encode([spol,phys])
-            break
 buttons=[]
 @app.route('/Auction', methods = ['POST'])
 def auction():
@@ -178,7 +178,6 @@ def ShopUpdate():
             shops.append(newshop)
             shops.remove(e)
             return jsonpickle.encode(newshop)
-            break
 
 @app.route('/playerdeath', methods = ['POST'])
 def playerdeath():
@@ -207,7 +206,6 @@ def MoobUpdate():
             moobs.append(newshop)
             moobs.remove(e)
             return jsonpickle.encode(newshop)
-            break
 
 @app.route('/PlayerUpdate', methods = ['POST'])
 def PlayerUpdate():
@@ -232,7 +230,6 @@ def giveupdate():
             dododoo=[e for e in e.updates]
             e.updates = []
             return jsonpickle.encode(dododoo)
-            break
     print('clientnotfounderror')
     return jsonpickle.encode([])
 @app.route('/players', methods = ['GET'])
