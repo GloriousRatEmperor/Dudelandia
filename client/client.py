@@ -2096,6 +2096,23 @@ def auctionend(gain):
     auctimer = time.time() + 10
     dott=[]
 updatelist=[shopreplace,moobreplace,count,Murderkill,enedead,auction,pricechange,auctionend]
+
+from threading import Thread
+serv=None
+def rp():
+    global serv
+    serv=requests.post('http://' + ipadress + ':5000/PlayerUpdate', headers=headers, data=jsonpickle.encode(me))
+a=Thread(target=rp)
+
+def serverdata():
+    global a
+    if a.is_alive():
+        return None
+    else:
+        a=Thread(target=rp)
+        a.start()
+        return serv
+
 while running:
     XX = pygame.mouse.get_pos()
     start_time = time.time()
@@ -2309,12 +2326,14 @@ while running:
         # for e in mobs:
         #     if distanceM(e.X + me.X + e.s[0] // 2, e.Y + me.Y + e.s[1] // 2, w // 2, h // 2, 100):
         #         fight([e])
-    r = requests.post('http://' + ipadress + ':5000/PlayerUpdate', headers=headers, data=jsonpickle.encode(me))
-    decoded=jsonpickle.decode(r.text)
-    newupdates=decoded[1]
-    for e in newupdates:
-        updatelist[e[0]](e[1])
-    players = decoded[0]
+
+    r = serverdata()
+    if r is not None:
+        decoded=jsonpickle.decode(r.text)
+        newupdates=decoded[1]
+        for e in newupdates:
+            updatelist[e[0]](e[1])
+        players = decoded[0]
 
     screen.blit(playerIMG, ((w - PlayerSize[0]) // 2, (h - PlayerSize[1]) // 2))
     pygame.draw.rect(screen, (0, 0, 0),
@@ -2327,7 +2346,6 @@ while running:
         screen.blit(e.I,(w* armorplace[e.ID-1]-e.s[0]//2,h* armorplace[e.ID*2-1]-e.s[1] // 2))
     draw0()
     draw00(0)
-
     ############           ############           ############           ############
     #######  player  #############  player  #############  player  #############  player  ######
     ############           ############           ############           ############
