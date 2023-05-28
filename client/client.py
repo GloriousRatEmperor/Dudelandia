@@ -13,6 +13,10 @@ pygame.init()
 arrows = []
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 w, h = pygame.display.get_surface().get_size()
+r=random.randint
+def wee(int,innt):
+    return (innt)
+random.randint=wee
 class player(object):
     def __init__(self,ID,X,Y,H,XP):
         self.ID=ID
@@ -1138,6 +1142,7 @@ def winfight(lootit=1):
                     me.XP[2]+=1
                     me.XP[0]-=me.XP[1]
                     me.XP[1]*=1.2
+
                     me.H[1]+=2*(9+me.XP[1])
                     atcmult+=0.07
     loot = []
