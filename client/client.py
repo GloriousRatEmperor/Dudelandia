@@ -78,7 +78,7 @@ Py = 0
 regen=0.007
 PARMR = 0
 PPARMR = 0
-armrmult=0.25
+armrmult=0.5
 PELEMENT = [0, 0]
 PED = [0, 0, 0]
 PSPECIAL = []
@@ -425,7 +425,7 @@ armors =['''[[torso, torso2], 5 + luck // 3, 2 + luck // 8, int(100+luck*luck/5*
                      [big + quality + ' The Deflector', 'has some armor, not much health, but protects from projectiles (and special sources of damage) costs:' ],1,0]''',
          '''[[life, life], -40 - int(luck*0.7)-70*(bigmult*2-2),-35 - int(luck*1)-70*(bigmult*2-2),int(600+luck*luck*1.8+ 13000*(bigmult*2-2)), [], 600 +bigmult*2000 + int(luck*luck*1.5),
                      [big + quality + ' Lifegown', 'has a lot of helf and regen, but has negative armour, costs:' ],1,0.01*luck+luck**2*0.0008+bigmult*2-2]''',
-         '''[[furnace, furnace2], 30 + luck*2 + 100 * (bigmult * 2 - 2),
+         '''[[furnace, furnace2], 30 + luck*3.5 + 100 * (bigmult * 2 - 2),
                    20 + int(luck*1.6) + 70 * (bigmult * 2 - 2), -100,
                    [], 600 + bigmult * 2000 + int(luck * luck * 1.5),
                    [big + quality + ' Face Forge',
