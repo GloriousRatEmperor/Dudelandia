@@ -13,10 +13,12 @@ pygame.init()
 arrows = []
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 w, h = pygame.display.get_surface().get_size()
-r=random.randint
-def wee(int,innt):
-    return (innt)
-random.randint=wee
+# r=random.randint
+# def wee(int,innt):
+#     return (1)
+# random.randint=wee
+
+
 class player(object):
     def __init__(self,ID,X,Y,H,XP):
         self.ID=ID
@@ -376,7 +378,7 @@ def METEOR(none,power,nothing):
                             else:
                                 lootem(b)
                 images.append(Image(e.X,e.Y,pygame.transform.smoothscale(explosionimg, (int(3216//24*power[1]), int(716//8*power[1]))),ti+10,[int(25*power[1]),int(5*power[1])]))
-def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
+def weaponsRANDOM(isarmor,id,gouit=0, bigmult=1):
     global weapons, armors
     big=""
     if gouit == 0:
@@ -475,20 +477,28 @@ def weaponsRANDOM(gouit, pricemult=0, spellmult=0, bigmult=1):
                'a powerful item that ... jk, it is trash, costs:'], 2,0.007],
     [[corrupt, corrupt2], 25 + luck + 60 * (bigmult * 2 - 2),
                1 - int(luck*2)-70*(bigmult*2-2) - 30 * (bigmult * 2 - 2), 0,
-              [[[1],atcspdchange,luck/5+1],[[1],spdchange,luck/15+1]], 600 + bigmult * 2000 + int(luck * luck),
+              [[[1],atcspdchange,luck/7+1],[[1],spdchange,luck/20+1]], 600 + bigmult * 2000 + int(luck * luck),
               [big + quality + ' Corrupted helmet',
                'high quality ones are more corrupted, increasing your speed, but making you weaker to magic, costs:'], 2,0]
              ]
 
 
+
+    if(isarmor):
+        selected=armors[id]
+    else:
+        selected=weapons[id]
     if bigmult !=1:
-        for e in weapons:
-            soiz = e[2][0].get_size()
-            e[2][0] = pygame.transform.smoothscale(e[2][0], (int(soiz[0] * bigmult), int(soiz[1] * bigmult)))
-        for e in armors:
-            soiz = e[0][0].get_size()
-            e[0][0] = pygame.transform.smoothscale(e[0][0], (int(soiz[0] * bigmult), int(soiz[1] * bigmult)))
-weaponsRANDOM(0)
+
+            if not isarmor:
+                soiz = selected[2][0].get_size()
+                selected[2][0] = pygame.transform.smoothscale(selected[2][0], (int(soiz[0] * bigmult), int(soiz[1] * bigmult)))
+            else:
+                soiz = selected[0][0].get_size()
+                selected[0][0] = pygame.transform.smoothscale(selected[0][0], (int(soiz[0] * bigmult), int(soiz[1] * bigmult)))
+    return selected
+
+
 dragonatc=[img('draconianatc.png'),img('draconian.png')]
 dragon=img('draconian.png')
 dopusIMG=img('dopus.png')
@@ -515,13 +525,13 @@ dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscal
          pygame.transform.smoothscale(dopii,(850,850)),pygame.transform.smoothscale(dopii,(1000,1000)),pygame.transform.smoothscale(dopii,(1200,1200)),
          pygame.transform.smoothscale(dopii,(1600,1600)),pygame.transform.smoothscale(dopii,(1900,1900)),pygame.transform.smoothscale(dopii,(3000,3000)),
          pygame.transform.smoothscale(dopii,(5000,5000)),pygame.transform.smoothscale(dopii,(15000,15000))]
-ampla=[2,2 ,0.5,0.5, 2,2, 0.05,0.08, 8,1, 1,1, 0.025,0.01]
-ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+ampla=[3,2 ,0.5,0.5, 8,4, 0.08,0.08, 4,1, 1.5,1, 0.08,0.07,0.8,0.5,0.2,0.19,20,30]
+ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
     global ampli,ampla
     if itemgood==0:
         itemgood=random.randint(1,15)
-    weaponsRANDOM(itemgood)
+
     if power[1]==1:
         ample=[e*power[0] for e in ampla]
     elif power[0]==1:
@@ -531,36 +541,36 @@ def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
     if mobnumber==1:
         MOB=mob(position[0], position[1], [grases[random.randint(0, 4)], grasatac], random.randint(4, 5), 'grass',
                         [atcup, [[1, 2, 3], 3, 140], shoot, [[4], 2, 10*ample[1], -1, 3, mosh]], random.randint(1, 170)*ample[0],
-                        [15*ample[1], 15*ample[1]],140, weapons[0])
+                        [15*ample[1], 15*ample[1]],140, weaponsRANDOM(0,0,itemgood))
     elif mobnumber == 2:
         MOB=mob(position[0], position[1], [pygame.transform.smoothscale(grases[random.randint(0, 4)],(400,400)), grasatacbig], 5.2, 'BIG grass',
                         [atcup, [[1, 2, 3], 4, 140], shoot, [[4], 5.6, 30*ample[3], -1, 3, pygame.transform.smoothscale(mosh,(942,565))]], random.randint(600, 1000)*ample[2],
-                        [15*ample[3], 15*ample[3]],140, weapons[4],0,0,300)
+                        [15*ample[3], 15*ample[3]],140, weaponsRANDOM(0,4,itemgood),0,0,300)
     elif mobnumber == 3:
         MOB=mob(position[0], position[1], [dopusIMG, dopusatc, [60, 0, 239, 287]], random.randint(6, 8), 'dopus',
-                        [atcup, [[3], 180, 120], slow, [[3], 3, 120]], 50*ample[4], [2*ample[5], 2*ample[5]],120, weapons[1])
+                        [atcup, [[3], 180, 120], slow, [[3], 3, 120]], 50*ample[4], [2*ample[5], 2*ample[5]],120, weaponsRANDOM(0,1,itemgood))
     elif mobnumber == 4:
         MOB=mob(position[0], position[1], [dragon, dragonatc], random.randint(4, 5), 'fire lizard',
-                        [atcup, [[2], 150, 150], shoot, [[3], 20, 200*ample[6], 60, 2, fireball]], 5000*ample[6], [30*ample[7], 30*ample[7]],150, weapons[3],0,0,1500)
+                        [atcup, [[2], 150, 150], shoot, [[3], 20, 200*ample[6], 60, 2, fireball]], 5000*ample[6], [30*ample[7], 30*ample[7]],150, weaponsRANDOM(0,3,itemgood),0,0,1500)
     elif mobnumber == 5:
         MOB=mob(position[0], position[1], [dope, dopeatc], random.randint(7, 10), 'dope',
                         [atcup, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 4, 10000], slow, [[2], 150, 15000],
-                         hpboost, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 3, 10000]], 15*ample[8], [2*ample[9], 2*ample[9]],120, armors[6])
+                         hpboost, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 3, 10000]], 15*ample[8], [2*ample[9], 2*ample[9]],120, weaponsRANDOM(1,6,itemgood))
     elif mobnumber == 6:
         MOB=mob(position[0], position[1], [orcIMG, orcatc, [-20, 0, 300, 300]], random.randint(3, 4), 'orc',
-                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, armors[0])
+                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, weaponsRANDOM(1,0,itemgood))
     elif mobnumber == 7:
         MOB=mob(position[0], position[1], [sieger, siege], 2.5, 'Blackrock cannon',
-                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 7500*ample[10], [30*ample[12], 30*ample[13]],50, weapons[3],0,0,2500)
+                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 7500*ample[12], [30*ample[13], 30*ample[13]],50, weaponsRANDOM(0,3,itemgood),0,0,2500)
     elif mobnumber == 8:
         MOB=mob(position[0], position[1], [cata, cataatc], 2.5, 'demon catapult',
-                        [shoot, [[4], 40, 10*ample[13], 1, 2, demonbolt,[[summondemon,[100,30]]]]], 600*ample[10], [0, 0],90, weapons[5],0,0,2500)
+                        [shoot, [[4], 40, 10*ample[15], 1, 2, demonbolt,[[summondemon,[100,30]]]]], 600*ample[14], [0, 0],90, weaponsRANDOM(0,5,itemgood),0,0,2500)
     elif mobnumber == 9:
         MOB=mob(position[0], position[1], [alien, alienatc], 2.5, 'Demon overseer',
-                        [shoot, [[3], 60, 10*ample[13], 1, 2, demonboltbig,[[summondemon,[1200,80]]]]], 2500*ample[10], [300*ample[12], 300*ample[13]],90, weapons[7],0,0,2500)
+                        [shoot, [[3], 60, 10*ample[17], 1, 2, demonboltbig,[[summondemon,[1200,80]]]]], 2500*ample[16], [300*ample[17], 300*ample[17]],90, weaponsRANDOM(0,7,itemgood),0,0,2500)
     elif mobnumber == 10:
         MOB=mob(position[0], position[1], [blob, blobatc], 2, 'blob',
-                        [atcup, [[2], 40, 220]], 25, [1, 1],200, weapons[8])
+                        [atcup, [[2], 40, 220]], 25*ample[18], [1*ample[19], 1*ample[19]],200, weaponsRANDOM(0,8,itemgood))
     return MOB
 minion=img('minion.png')
 minionattack=[img('minionatc.png')]
@@ -594,11 +604,11 @@ class moob(pygame.sprite.Sprite):
         for e in range(self.e):
             #raritymini=max(1,int(self.d//5))
             if self.d>5:
-                mawb = genmob(random.randint(1, 7), [random.randint(-2000,2000), random.randint(-2000,2000)], [2.5, 1])
+                mawb = genmob(random.randint(1, 10), [random.randint(-2000,2000), random.randint(-2000,2000)], [2.5, 1])
                 mawb.H[0]*=self.d/5+self.d/20*self.d+1
                 mawb.H[1] *=self.d/5+self.d/20*self.d+1
             else:
-                mawb = genmob(random.randint(1, 7), [random.randint(-2000,2000), random.randint(-2000,2000)], [self.d / 4, 1])
+                mawb = genmob(random.randint(1, 10), [random.randint(-2000,2000), random.randint(-2000,2000)], [self.d / 4, 1])
 
             self.enemies.append(mawb)
 ranged=[]
@@ -640,10 +650,11 @@ class timer(pygame.sprite.Sprite):
 
     def F(self):
         self.f(self, self.power)
-
+ider=0
 class mob(pygame.sprite.Sprite):
     def __init__(self, X, Y, I, S, N, SPE, H, A,atcspd, Loot, id=0, nevaatc=0,range=0):
         super(mob, self).__init__()
+        global ider
         self.fliped=1
         self.atcspd = atcspd
         self.X = X
@@ -658,7 +669,8 @@ class mob(pygame.sprite.Sprite):
         self.S = [S, S]
         self.A = A
         if id==0:
-            self.ID = random.randint(10, 100000000)
+            self.ID = ider
+            ider+=1
         else:
             self.ID = id
         self.SPE = SPE
@@ -1511,12 +1523,10 @@ def shoppin(type, ite=0):
                 buttons.append(button(int(w * .78), int(h * 0.78), book, atcP,
                                       [10, [1, 0, 0, 2, 0], ['Book of war', '+1 atttack!, how amazing, cost:']]))
             for e in range(3):
-                weaponsRANDOM(0)
-                purchase = weapons[random.randint(0, len(weapons) - 1)]
+                purchase = weaponsRANDOM(0,random.randint(0, len(weapons) - 1))
                 buttons.append(button(int(w * 0.15 * e + w * 0.3), int(h * 0.78), purchase[2][1], getweapon,
                                       [purchase[6], [purchase], purchase[7]]))
-            weaponsRANDOM(0)
-            purchase = armors[random.randint(0, len(armors) - 1)]
+            purchase = weaponsRANDOM(1,random.randint(0, len(armors) - 1))
             buttons.append(button(int(w * 0.37), int(h * 0.258), purchase[0][1], getarmor,
                                   [purchase[5], [purchase], purchase[6]]))
         elif type==1:
@@ -1824,13 +1834,11 @@ def SANDWICH(nomatter):
     # X, Y, I, A,speed, SPE, cost
     #[0, 25, luck * 0.5 + luck ** 2 * 0.05, 1, -1,
      #pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]]
-    ActiveWeapon.append(Weapon(-50, 40, [sandw,beefbook], 1, 0, [[2], 1, 1, 0, heal, [100,1]], 500,"Sandwich"))
+    ActiveWeapon.append(Weapon(-50, 40, [sandw,beefbook], 1, 0, [[2], 1, 1, 0, heal, [100,1]], 500,["Sandwich","heals and health improveth this healthy snack"]))
 
 
 
-mobs.append(mob(700, 600, [img('man2.png'), []], 0, 'man', [], 100, [1, 1], 150, weapons[2]))
-weaponsRANDOM(0)
-
+mobs.append(mob(700, 600, [img('man2.png'), []], 0, 'man', [], 100, [1, 1], 150, weaponsRANDOM(0,2)))
 
 def MobAttack(t, f):
     # t=time sprite, f=[the mob,the faze], mabe usable t.power[0]=the mob also... but unchanged by changes in the original...probably
@@ -2038,7 +2046,7 @@ def Murderkill(lols):
     for e in lols[0]:
         if not e.ID==me.ID:
             mobs.append(mob(700, 700, [playerIMGcrpd, playerIMGcrpd], 0, 'Player',
-                            [], 10000, [0,0],50, weapons[4],e.ID,1))
+                            [], 10000, [0,0],50, weaponsRANDOM(0,4),e.ID,1))
 to=0
 players=[]
 def enedead(didIwin):
