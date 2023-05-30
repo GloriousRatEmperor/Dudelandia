@@ -13,9 +13,10 @@ pygame.init()
 arrows = []
 screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
 w, h = pygame.display.get_surface().get_size()
-# r=random.randint
+ograndom=random.randint
 # def wee(int,innt):
-#     return (1)
+#     f=random.choice([0,1])
+#     return (innt)
 # random.randint=wee
 
 
@@ -77,7 +78,7 @@ Py = 0
 regen=0.007
 PARMR = 0
 PPARMR = 0
-armrmult=1
+armrmult=0.25
 PELEMENT = [0, 0]
 PED = [0, 0, 0]
 PSPECIAL = []
@@ -378,6 +379,75 @@ def METEOR(none,power,nothing):
                             else:
                                 lootem(b)
                 images.append(Image(e.X,e.Y,pygame.transform.smoothscale(explosionimg, (int(3216//24*power[1]), int(716//8*power[1]))),ti+10,[int(25*power[1]),int(5*power[1])]))
+
+
+weapons = ['''[-50, 40, [chopper, choppercrpd], 6 + luck // 1.5*bigmult,0, [], int(100 + luck*3*bigmult),
+                [big+quality + ' Chopper', 'quite a basic sword, decently long though, costs:']]'''
+    ,''' [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 2.5*bigmult,-2-luck//10, [],int((70 + luck*10+ luck**2/6)*bigmult),
+           [big+quality + ' Zandalari meatcleaver', 'short and weak, but fast costs:']]'''
+    , '''[-50, 40, [ice, ice2], 30 + luck // 2*bigmult,0-luck//15,
+           [[1], 0, 0, 100, slow, ['*line 1', 1.09 + luck / 120, 70 + luck/3]], int(250 + luck*luck*2*bigmult),
+           [big+quality + ' Frost-Slicer',
+            'freeze amount and duration is relient on quality. can be very powerful against meele foes. costs:']]'''
+    ,''' [-50, 40, [ash, ash2], 75 + luck*20*bigmult, 0 - luck // 20,
+            # Speed,attack,pierce,sametarget,IMG
+           [[1,2], 0, 0, 100, shoot, [0, 7, 5+luck*1.5*bigmult,100,-1,pygame.transform.smoothscale(lava, (int(500 * bigmult), int(250 * bigmult)))]], int((9000 + luck*luck*80)*bigmult),
+           [big+quality + ' Godslayer',
+            'throws lava at enemies hit, immensly expensive. costs:']]'''
+    , '''[-50, 40, [gun, gun2], luck // 10,4-luck//10,
+           [[2], 1, 1, 0, shoot, [0, 25, luck*0.7+luck**2*0.1 * bigmult, 1, -1, pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]],int(50 * luck+luck**2*bigmult*1.2), [big+quality + ' Gun',
+                                                                                  'guns can be utter failiures, or strong, but it will reflect on the price costs:']]'''
+    , '''[-50, 40, [staffm, staffm2], luck // 5, 4,
+           [[1,2], 1, 1, 0, METEOR, [(300 + luck ** 2 * 0.05)*bigmult**2,bigmult**2]],
+           int((3000+125 * luck + 4*luck ** 2)*(bigmult**3)), [big+quality + ' Meteor staff',
+                                   'The Meteor staff will call down a meteor after a delay, it requires precision to maximize damage, costs:']]'''
+    , '''[-50, 40, [defend, defendcrpd], 50 + luck*2 + bigmult*150-150, 50,
+           [[1,2], 1, 1, 0, defender, [2+luck*0.05, 250]], int(250 + luck * luck * 2 * bigmult),
+           [big + quality + ' Defender\\'s hammer',
+            'a powerful hammer of a fallen champion, boosts your defence greatly for a few seconds, but does not stack. costs:']]'''
+    ,'''[-50, 40, [wata, watacrpd], 65 + luck*20*bigmult, 3, [[2], 1, 1, 0, teleport, [2+luck*0.05, 250]], int((6000 + luck*100)*bigmult),
+     [big + quality + ' Waterforged Battleaxe',
+      'somewhat slow, but big damage. casts teleport, costs:' ]]'''
+
+    , '''[-50, 40, [axe, axe2],3+luck //2* bigmult, 4 - luck // 10,
+           [[2], 1, 1, 0, shoot, [0, 25, (luck * 0.5+2)* bigmult, 1, -1,
+                                  pygame.transform.smoothscale(axe3, (int(65 * bigmult), int(90 * bigmult)))]],
+           int(200 + luck*30*bigmult), [big + quality + ' Throwing axe',
+                                                  'unlike guns melee attacks do actual damage costs:']]'''
+           ]
+#I, Armor, PArmor, helf, SPE, cost
+
+armors =['''[[torso, torso2], 5 + luck // 3, 2 + luck // 8, int(100+luck*luck/5*(bigmult*3-2)), [], 400+bigmult*2000 + luck*8,
+            [big + quality + ' Torsoarmor', 'quite a basic armorpiece, still much better than nothing though, costs:' ],1,0]''',
+         '''[[demon, demon], int((35 + luck*1.5)*(bigmult*3-2)),4 + luck // 7,int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*2000 + int(luck*luck*1.5),
+                     [big + quality + ' Demonplate', 'has a lot of armor, not so much health though, costs:' ],1,0]''',
+         '''[[deflect, deflect], (7 + int(luck*0.3))*(bigmult*3-2),(10 + luck*2)*(bigmult*3-2),int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*1500 + int(luck*luck*1.5),
+                     [big + quality + ' The Deflector', 'has some armor, not much health, but protects from projectiles (and special sources of damage) costs:' ],1,0]''',
+         '''[[life, life], -40 - int(luck*0.7)-70*(bigmult*2-2),-35 - int(luck*1)-70*(bigmult*2-2),int(600+luck*luck*1.8+ 13000*(bigmult*2-2)), [], 600 +bigmult*2000 + int(luck*luck*1.5),
+                     [big + quality + ' Lifegown', 'has a lot of helf and regen, but has negative armour, costs:' ],1,0.01*luck+luck**2*0.0008+bigmult*2-2]''',
+         '''[[furnace, furnace2], 30 + luck*2 + 100 * (bigmult * 2 - 2),
+                   20 + int(luck*1.6) + 70 * (bigmult * 2 - 2), -100,
+                   [], 600 + bigmult * 2000 + int(luck * luck * 1.5),
+                   [big + quality + ' Face Forge',
+                    'has a lot of armour, but reduces your health and scorches your face. poorly made ones are sometimes not worth it, costs:'], 2,-0.15]''',
+         '''[[horned, horned2], 25 + luck + 60 * (bigmult * 2 - 2),
+                   10 + int(luck*0.3) + 50 * (bigmult * 2 - 2), 0,
+                   [[[1],atcchange,math.sqrt(luck)/4+1]], 600 + bigmult * 2000 + int(luck * luck),
+                   [big + quality + ' Horned helmet',
+                    'has a decent amount of armour, increases attack when equipped, costs:'], 2,0]''',
+         '''[[cap, cap2], 10+luck//3 + 25 * (bigmult * 2 - 2),
+                   5 + int(luck*0.2) + 20 * (bigmult * 2 - 2), 50+luck*3 + 200 * (bigmult * 2 - 2),
+                   [], 100 + bigmult * 100 + luck*8,
+                   [big + quality + ' leather cap',
+                    'a powerful item that ... jk, it is trash, costs:'], 2,0.007]''',
+         '''[[corrupt, corrupt2], 25 + luck + 60 * (bigmult * 2 - 2),
+                    1 - int(luck*2)-70*(bigmult*2-2) - 30 * (bigmult * 2 - 2), 0,
+                   [[[1],atcspdchange,luck/10+1],[[1],spdchange,luck/30+1]], 600 + bigmult * 2000 + int(luck * luck),
+                   [big + quality + ' Corrupted helmet',
+                    'high quality ones are more corrupted, increasing your speed, but making you weaker to magic, costs:'], 2,0]'''
+         ]
+
+
 def weaponsRANDOM(isarmor,id,gouit=0, bigmult=1):
     global weapons, armors
     big=""
@@ -416,78 +486,11 @@ def weaponsRANDOM(isarmor,id,gouit=0, bigmult=1):
             bigmult+=0.25
         #X, Y, I, A,speed, SPE, cost
 
-    weapons = [[-50, 40, [chopper, choppercrpd], 6 + luck // 1.5*bigmult,0, [], int(100 + luck*3*bigmult),
-                [big+quality + ' Chopper', 'quite a basic sword, decently long though, costs:']]
-        , [-50, 40, [zandalar,zandalarcrpd], 3 + luck // 2.5*bigmult,-2-luck//10, [],int((70 + luck*10+ luck**2/6)*bigmult),
-           [big+quality + ' Zandalari meatcleaver', 'short and weak, but fast costs:']]
-        , [-50, 40, [ice, ice2], 30 + luck // 2*bigmult,0-luck//15,
-           [[1], 0, 0, 100, slow, ['*line 1', 1.09 + luck / 120, 70 + luck/3]], int(250 + luck*luck*2*bigmult),
-           [big+quality + ' Frost-Slicer',
-            'freeze amount and duration is relient on quality. can be very powerful against meele foes. costs:']]
-        , [-50, 40, [ash, ash2], 75 + luck*20*bigmult, 0 - luck // 20,
-            # Speed,attack,pierce,sametarget,IMG
-           [[1,2], 0, 0, 100, shoot, [0, 7, 5+luck*1.5*bigmult,100,-1,pygame.transform.smoothscale(lava, (int(500 * bigmult), int(250 * bigmult)))]], int((9000 + luck*luck*80)*bigmult),
-           [big+quality + ' Godslayer',
-            'throws lava at enemies hit, immensly expensive. costs:']]
-        , [-50, 40, [gun, gun2], luck // 10,4-luck//10,
-           [[2], 1, 1, 0, shoot, [0, 25, luck*0.7+luck**2*0.1 * bigmult, 1, -1, pygame.transform.smoothscale(bullet, (int(30 * bigmult), int(15 * bigmult)))]],int(50 * luck+luck**2*bigmult*1.2), [big+quality + ' Gun',
-                                                                                  'guns can be utter failiures, or strong, but it will reflect on the price costs:']]
-        , [-50, 40, [staffm, staffm2], luck // 5, 4,
-           [[1,2], 1, 1, 0, METEOR, [(300 + luck ** 2 * 0.05)*bigmult**2,bigmult**2]],
-           int((3000+125 * luck + 4*luck ** 2)*(bigmult**3)), [big+quality + ' Meteor staff',
-                                   'The Meteor staff will call down a meteor after a delay, it requires precision to maximize damage, costs:']]
-        , [-50, 40, [defend, defendcrpd], 50 + luck*2 + bigmult*150-150, 50,
-           [[1,2], 1, 1, 0, defender, [2+luck*0.05, 250]], int(250 + luck * luck * 2 * bigmult),
-           [big + quality + ' Defender\'s hammer',
-            'a powerful hammer of a fallen champion, boosts your defence greatly for a few seconds, but does not stack. costs:']]
-    ,[-50, 40, [wata, watacrpd], 65 + luck*20*bigmult, 3, [[2], 1, 1, 0, teleport, [2+luck*0.05, 250]], int((6000 + luck*100)*bigmult),
-     [big + quality + ' Waterforged Battleaxe',
-      'somewhat slow, but big damage. casts teleport, costs:' ]]
-
-        , [-50, 40, [axe, axe2],3+luck //2* bigmult, 4 - luck // 10,
-           [[2], 1, 1, 0, shoot, [0, 25, (luck * 0.5+2)* bigmult, 1, -1,
-                                  pygame.transform.smoothscale(axe3, (int(65 * bigmult), int(90 * bigmult)))]],
-           int(200 + luck*30*bigmult), [big + quality + ' Throwing axe',
-                                                  'unlike guns melee attacks do actual damage costs:']]
-               ]
-          #I, Armor, PArmor, helf, SPE, cost
-
-    armors =[[[torso, torso2], 5 + luck // 3, 2 + luck // 8, int(100+luck*luck/5*(bigmult*3-2)), [], 400+bigmult*2000 + luck*8,
-                [big + quality + ' Torsoarmor', 'quite a basic armorpiece, still much better than nothing though, costs:' ],1,0],
-    [[demon, demon], int((35 + luck*1.5)*(bigmult*3-2)),4 + luck // 7,int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*2000 + int(luck*luck*1.5),
-                [big + quality + ' Demonplate', 'has a lot of armor, not so much health though, costs:' ],1,0],
-    [[deflect, deflect], (7 + int(luck*0.3))*(bigmult*3-2),(10 + luck*2)*(bigmult*3-2),int(50+luck*luck/10*(bigmult*3-2)), [], 600+bigmult*1500 + int(luck*luck*1.5),
-                [big + quality + ' The Deflector', 'has some armor, not much health, but protects from projectiles (and special sources of damage) costs:' ],1,0],
-    [[life, life], -40 - int(luck*0.7)-70*(bigmult*2-2),-35 - int(luck*1)-70*(bigmult*2-2),int(600+luck*luck*1.8+ 13000*(bigmult*2-2)), [], 600 +bigmult*2000 + int(luck*luck*1.5),
-                [big + quality + ' Lifegown', 'has a lot of helf and regen, but has negative armour, costs:' ],1,0.01*luck+luck**2*0.0008+bigmult*2-2],
-    [[furnace, furnace2], 30 + luck*2 + 100 * (bigmult * 2 - 2),
-              20 + int(luck*1.6) + 70 * (bigmult * 2 - 2), -100,
-              [], 600 + bigmult * 2000 + int(luck * luck * 1.5),
-              [big + quality + ' Face Forge',
-               'has a lot of armour, but reduces your health and scorches your face. poorly made ones are sometimes not worth it, costs:'], 2,-0.15],
-    [[horned, horned2], 25 + luck + 60 * (bigmult * 2 - 2),
-              10 + int(luck*0.3) + 50 * (bigmult * 2 - 2), 0,
-              [[[1],atcchange,math.sqrt(luck)/5+1]], 600 + bigmult * 2000 + int(luck * luck),
-              [big + quality + ' Horned helmet',
-               'has a decent amount of armour, increases attack when equipped, costs:'], 2,0],
-    [[cap, cap2], 10+luck//3 + 25 * (bigmult * 2 - 2),
-              5 + int(luck*0.2) + 20 * (bigmult * 2 - 2), 50+luck*3 + 200 * (bigmult * 2 - 2),
-              [], 100 + bigmult * 100 + luck*8,
-              [big + quality + ' leather cap',
-               'a powerful item that ... jk, it is trash, costs:'], 2,0.007],
-    [[corrupt, corrupt2], 25 + luck + 60 * (bigmult * 2 - 2),
-               1 - int(luck*2)-70*(bigmult*2-2) - 30 * (bigmult * 2 - 2), 0,
-              [[[1],atcspdchange,luck/7+1],[[1],spdchange,luck/20+1]], 600 + bigmult * 2000 + int(luck * luck),
-              [big + quality + ' Corrupted helmet',
-               'high quality ones are more corrupted, increasing your speed, but making you weaker to magic, costs:'], 2,0]
-             ]
-
-
-
     if(isarmor):
         selected=armors[id]
     else:
         selected=weapons[id]
+    selected=eval(selected)
     if bigmult !=1:
 
             if not isarmor:
@@ -525,7 +528,7 @@ dopeatc=[pygame.transform.smoothscale(dopii,(75,75)),pygame.transform.smoothscal
          pygame.transform.smoothscale(dopii,(850,850)),pygame.transform.smoothscale(dopii,(1000,1000)),pygame.transform.smoothscale(dopii,(1200,1200)),
          pygame.transform.smoothscale(dopii,(1600,1600)),pygame.transform.smoothscale(dopii,(1900,1900)),pygame.transform.smoothscale(dopii,(3000,3000)),
          pygame.transform.smoothscale(dopii,(5000,5000)),pygame.transform.smoothscale(dopii,(15000,15000))]
-ampla=[3,2 ,0.5,0.5, 8,4, 0.08,0.08, 4,1, 1.5,1, 0.08,0.07,0.8,0.5,0.2,0.19,20,30]
+ampla=[3,2 ,0.5,0.7, 8,4, 0.1,0.12, 4,1, 1.5,1.5, 0.08,0.11,0.8,0.5,0.3,0.15,20,40]
 ampli=[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
 def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
     global ampli,ampla
@@ -544,30 +547,30 @@ def genmob(mobnumber, position=[700,700],power=[1,0],itemgood=0):
                         [15*ample[1], 15*ample[1]],140, weaponsRANDOM(0,0,itemgood))
     elif mobnumber == 2:
         MOB=mob(position[0], position[1], [pygame.transform.smoothscale(grases[random.randint(0, 4)],(400,400)), grasatacbig], 5.2, 'BIG grass',
-                        [atcup, [[1, 2, 3], 4, 140], shoot, [[4], 5.6, 30*ample[3], -1, 3, pygame.transform.smoothscale(mosh,(942,565))]], random.randint(600, 1000)*ample[2],
+                        [atcup, [[1, 2, 3], 4, 140], shoot, [[4], 5.6, 16*ample[3], -1, 3, pygame.transform.smoothscale(mosh,(942,565))]], random.randint(600, 1000)*ample[2],
                         [15*ample[3], 15*ample[3]],140, weaponsRANDOM(0,4,itemgood),0,0,300)
     elif mobnumber == 3:
         MOB=mob(position[0], position[1], [dopusIMG, dopusatc, [60, 0, 239, 287]], random.randint(6, 8), 'dopus',
                         [atcup, [[3], 180, 120], slow, [[3], 3, 120]], 50*ample[4], [2*ample[5], 2*ample[5]],120, weaponsRANDOM(0,1,itemgood))
     elif mobnumber == 4:
         MOB=mob(position[0], position[1], [dragon, dragonatc], random.randint(4, 5), 'fire lizard',
-                        [atcup, [[2], 150, 150], shoot, [[3], 20, 200*ample[6], 60, 2, fireball]], 5000*ample[6], [30*ample[7], 30*ample[7]],150, weaponsRANDOM(0,3,itemgood),0,0,1500)
+                        [atcup, [[2], 150, 150], shoot, [[3], 20, 60*ample[6], 60, 2, fireball]], 5000*ample[6], [20*ample[7], 20*ample[7]],150, weaponsRANDOM(0,3,itemgood),0,0,1500)
     elif mobnumber == 5:
         MOB=mob(position[0], position[1], [dope, dopeatc], random.randint(7, 10), 'dope',
                         [atcup, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 4, 10000], slow, [[2], 150, 15000],
                          hpboost, [[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21], 3, 10000]], 15*ample[8], [2*ample[9], 2*ample[9]],120, weaponsRANDOM(1,6,itemgood))
     elif mobnumber == 6:
         MOB=mob(position[0], position[1], [orcIMG, orcatc, [-20, 0, 300, 300]], random.randint(3, 4), 'orc',
-                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [30*ample[11], 30*ample[11]],50, weaponsRANDOM(1,0,itemgood))
+                        [atcup, [[2], 2, 500], slow, [[2], 0.5, 50]], 250*ample[10], [20*ample[11], 20*ample[11]],50, weaponsRANDOM(1,0,itemgood))
     elif mobnumber == 7:
         MOB=mob(position[0], position[1], [sieger, siege], 2.5, 'Blackrock cannon',
-                        [shoot, [[1,2,3,4,5], 20, 200*ample[13], 60, 2, fireball]], 7500*ample[12], [30*ample[13], 30*ample[13]],50, weaponsRANDOM(0,3,itemgood),0,0,2500)
+                        [shoot, [[1,2,3,4,5], 20, 70*ample[13], 60, 2, fireball]], 7500*ample[12], [20*ample[13], 20*ample[13]],50, weaponsRANDOM(0,3,itemgood),0,0,2500)
     elif mobnumber == 8:
         MOB=mob(position[0], position[1], [cata, cataatc], 2.5, 'demon catapult',
                         [shoot, [[4], 40, 10*ample[15], 1, 2, demonbolt,[[summondemon,[100,30]]]]], 600*ample[14], [0, 0],90, weaponsRANDOM(0,5,itemgood),0,0,2500)
     elif mobnumber == 9:
         MOB=mob(position[0], position[1], [alien, alienatc], 2.5, 'Demon overseer',
-                        [shoot, [[3], 60, 10*ample[17], 1, 2, demonboltbig,[[summondemon,[1200,80]]]]], 2500*ample[16], [300*ample[17], 300*ample[17]],90, weaponsRANDOM(0,7,itemgood),0,0,2500)
+                        [shoot, [[3], 60, 10*ample[17], 1, 2, demonboltbig,[[summondemon,[1200,50]]]]], 2500*ample[16], [75*ample[17], 75*ample[17]],90, weaponsRANDOM(0,7,itemgood),0,0,2500)
     elif mobnumber == 10:
         MOB=mob(position[0], position[1], [blob, blobatc], 2, 'blob',
                         [atcup, [[2], 40, 220]], 25*ample[18], [1*ample[19], 1*ample[19]],200, weaponsRANDOM(0,8,itemgood))
@@ -577,7 +580,7 @@ minionattack=[img('minionatc.png')]
 megaminion=img('megaminion.png')
 megaminionattack=[img('bigminionatc.png'),img('megaminion.png')]
 def summondemon(target,stats):
-    global chosen, mobs
+    global chosen, mobs,loot
     if stats[0]<800:
         imajene=[minion,minionattack]
         speed=6
@@ -590,6 +593,7 @@ def summondemon(target,stats):
     mobs.append(MUB)
     if arena==1:
         chosen.append(MUB)
+        loot.append(MUB.H[1]*10)
 class moob(pygame.sprite.Sprite):
     def __init__(self,X,Y,I,ID,Enemies,difficulty):
         self.ID=ID
@@ -1142,6 +1146,15 @@ def winfight(lootit=1):
     borderXX = [-20000, 20000]
     borderYY = [-20000, 20000]
     if lootit==1:
+        e=loot[0]
+        me.XP[0] += e
+        while me.XP[0]>me.XP[1]:
+            me.XP[2]+=1
+            me.XP[0]-=me.XP[1]
+            me.XP[1]*=1.05
+
+            me.H[1]+=3*(9+me.XP[1])
+            atcmult+=0.1
         for e in loot:
             if isinstance(e, list):
                 if isinstance(e[0], int):
@@ -1149,14 +1162,7 @@ def winfight(lootit=1):
                 else:
                     unActivearmor.append(Armor(e[0], e[1], e[2], e[3], e[4],e[5],e[6],e[7],e[8]))
             else:
-                me.XP[0] += e
-                while me.XP[0]>me.XP[1]:
-                    me.XP[2]+=1
-                    me.XP[0]-=me.XP[1]
-                    me.XP[1]*=1.2
-
-                    me.H[1]+=2*(9+me.XP[1])
-                    atcmult+=0.07
+                money += e
     loot = []
     me.H[0] = me.H[1]
 
@@ -2297,9 +2303,11 @@ while running:
         heh[0]*=timeout
         heh[1]*= timeout
         if heh[1] > max(0,PARMR*armrmult):
-            me.H[0] -= (heh[1] - PARMR*armrmult) / (8 + max(PARMR*armrmult, 0)) / 10
+            dmgtake=(heh[1] - PARMR*armrmult) / (8 + max(PARMR*armrmult, 0)) / 10
+            me.H[0] -= dmgtake
         if heh[0] > max(0,PPARMR*armrmult):
-            me.H[0] -= (heh[0] - PPARMR*armrmult) / (8 + max(PPARMR*armrmult, 0)) / 10
+            dmgtake=(heh[0] - PPARMR*armrmult) / (8 + max(PPARMR*armrmult, 0)) / 10
+            me.H[0] -= dmgtake
         if me.H[0]<0:
             r = requests.post('http://'+ipadress+':5000/playerdeath', headers=headers,
                               data=jsonpickle.encode(me.ID))
@@ -2408,9 +2416,9 @@ while running:
     ############           ############           ############           ############
     fps = font.render("FPS: " + str(time.time() - start_time), True, (0, 0, 0))
     screen.blit(fps, (10, 20))
-    fps = font.render("TimeTillDeath: " + str(countdown+240 - int(start_time)), True, (0, 0, 0))
+    fps = font.render("TimeTillDeath: " + str(countdown+360 - int(start_time)), True, (0, 0, 0))
     screen.blit(fps, (10, 50))
-    if (countdown+240 - int(start_time))<1:
+    if (countdown+360 - int(start_time))<1:
         countdown=1000000000000
         r = requests.post('http://'+ipadress+':5000/Murderfight', headers=headers, data=jsonpickle.encode([]))
     for e in timedstuffs:
