@@ -2035,11 +2035,17 @@ helth=0
 #for e in range(10):
     #getarmor([armors[ random.randint(0,len(armors)-1) ]])
 def Murderkill(lols):
-    global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, PXSPD, PYSPD,arena,mobs
+    global loot, PX1, PY1, chosen, arena, ArenaSize, me, Px, Py, borderX, borderY, borderXX, borderYY, PXSPD, PYSPD,arena,mobs,arrows
     PXSPD =0
     PYSPD = 0
     mobs=[]
     chosen=[]
+    for e in arrows:
+        arrows.remove(e)
+        if e in allyarrow:
+            allyarrow.remove(e)
+        else:
+            enearrow.remove(e)
     ArenaSize = arenaIMG.get_size()
     me.X = random.randint(-(ArenaSize[0] - PlayerSize[0]) // 2 - w // 2,(ArenaSize[0] - PlayerSize[0]) // 2 - w // 2)
     me.Y = random.randint(-(ArenaSize[1] - PlayerSize[1]) // 2 - h // 2, (ArenaSize[1] - PlayerSize[1]) // 2 - h // 2)
@@ -2236,7 +2242,7 @@ while running:
             if event.key == pygame.K_w:
                 for e in ActiveWeapon:
                     if e.name[0]=='Health potion':
-                        heal(0,[250,0],0)
+                        heal(0,[me.H[1]/3,0],0)
                         items.remove(e)
                         ActiveWeapon.remove(e)
                         amountofitemsbeforethisone=0
@@ -2281,7 +2287,7 @@ while running:
     elif arena==3:
         if int(time.time())>timeouter:
             timeouter = int(time.time())
-            timeout+=5
+            timeout+=2.5
         borderX = [(w - ArenaSize[0]) // 2 + Px, (w - ArenaSize[0]) // 2 + Px + ArenaSize[0]]
         borderY = [(h - ArenaSize[1]) // 2 + Py, (h - ArenaSize[1]) // 2 + Py + ArenaSize[1]]
         draw7()
